@@ -33,6 +33,8 @@ export interface DemoProduct {
   conditionRank: ConditionRank;
   conditionDetails: string;
   managementCode: string;
+  imageUrl: string;
+  price: string;
 }
 
 export interface ListingData {
