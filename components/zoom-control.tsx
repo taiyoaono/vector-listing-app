@@ -11,22 +11,8 @@ interface ZoomControlProps {
 
 const YELLOW = "#FFCC33";
 
-function clamp(val: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, val));
-}
-
-// Logarithmic mapping for zoom <-> angle
-function zoomToNormalized(zoom: number, min: number, max: number): number {
-  const logMin = Math.log2(Math.max(min, 0.5));
-  const logMax = Math.log2(max);
-  const logZoom = Math.log2(clamp(zoom, min, max));
-  return (logZoom - logMin) / (logMax - logMin);
-}
-
-function normalizedToZoom(n: number, min: number, max: number): number {
-  const logMin = Math.log2(Math.max(min, 0.5));
-  const logMax = Math.log2(max);
-  return Math.pow(2, logMin + clamp(n, 0, 1) * (logMax - logMin));
+function clamp(v: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, v));
 }
 
 export default function ZoomControl({
@@ -46,9 +32,8 @@ export default function ZoomControl({
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dialDragStartXRef = useRef(0);
-  const dialDragStartNormRef = useRef(0);
+  const dialDragBaseZoomRef = useRef(1);
 
-  // Detect capabilities
   useEffect(() => {
     if (!cameraReady || !streamRef.current) return;
     const track = streamRef.current.getVideoTracks()[0];
@@ -70,7 +55,6 @@ export default function ZoomControl({
       const clamped = clamp(Math.round(value * 10) / 10, minZoom, maxZoom);
       zoomRef.current = clamped;
       setZoom(clamped);
-
       if (supportsNativeZoom && streamRef.current) {
         const track = streamRef.current.getVideoTracks()[0];
         track
@@ -84,22 +68,21 @@ export default function ZoomControl({
     [minZoom, maxZoom, supportsNativeZoom, streamRef, videoRef]
   );
 
-  const showDialWithTimer = useCallback(() => {
+  const openDial = useCallback(() => {
     setShowDial(true);
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
   }, []);
 
-  const scheduleHideDial = useCallback(() => {
+  const scheduleDismiss = useCallback(() => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    hideTimerRef.current = setTimeout(() => setShowDial(false), 800);
+    hideTimerRef.current = setTimeout(() => setShowDial(false), 1000);
   }, []);
 
-  // Pinch zoom on camera view
+  // Pinch zoom
   useEffect(() => {
     const el = videoRef.current?.parentElement;
     if (!el) return;
-
-    const onTouchStart = (e: TouchEvent) => {
+    const onStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
         e.preventDefault();
         basePinchDistRef.current = Math.hypot(
@@ -107,11 +90,10 @@ export default function ZoomControl({
           e.touches[1].clientY - e.touches[0].clientY
         );
         baseZoomRef.current = zoomRef.current;
-        showDialWithTimer();
+        openDial();
       }
     };
-
-    const onTouchMove = (e: TouchEvent) => {
+    const onMove = (e: TouchEvent) => {
       if (e.touches.length === 2 && basePinchDistRef.current > 0) {
         e.preventDefault();
         const dist = Math.hypot(
@@ -121,28 +103,25 @@ export default function ZoomControl({
         applyZoom(baseZoomRef.current * (dist / basePinchDistRef.current));
       }
     };
-
-    const onTouchEnd = (e: TouchEvent) => {
+    const onEnd = (e: TouchEvent) => {
       if (e.touches.length < 2) {
         basePinchDistRef.current = 0;
-        scheduleHideDial();
+        scheduleDismiss();
       }
     };
-
-    el.addEventListener("touchstart", onTouchStart, { passive: false });
-    el.addEventListener("touchmove", onTouchMove, { passive: false });
-    el.addEventListener("touchend", onTouchEnd);
-
+    el.addEventListener("touchstart", onStart, { passive: false });
+    el.addEventListener("touchmove", onMove, { passive: false });
+    el.addEventListener("touchend", onEnd);
     return () => {
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchmove", onTouchMove);
-      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove", onMove);
+      el.removeEventListener("touchend", onEnd);
     };
-  }, [applyZoom, videoRef, showDialWithTimer, scheduleHideDial]);
+  }, [applyZoom, videoRef, openDial, scheduleDismiss]);
 
   if (!cameraReady) return null;
 
-  // Dynamic presets
+  // Presets
   const presets: number[] = [];
   if (minZoom <= 0.5) presets.push(0.5);
   presets.push(1);
@@ -153,157 +132,138 @@ export default function ZoomControl({
     Math.abs(curr - zoom) < Math.abs(prev - zoom) ? curr : prev
   );
 
-  const formatZoom = (z: number) => {
+  const fmt = (z: number) => {
     if (z < 1) return `.${Math.round(z * 10)}`;
     if (z === Math.floor(z)) return `${z}`;
     return z.toFixed(1);
   };
 
-  // Dial rendering
-  const DIAL_W = 260;
-  const DIAL_H = 140;
-  const CX = DIAL_W / 2;
-  const CY = DIAL_H - 10;
-  const R = 110;
-  const TICK_COUNT = 80;
+  // --- Dial SVG ---
+  const W = 280, H = 100;
+  const CX = W / 2, CY = H + 30; // center of full circle (below visible area)
+  const R = 120;
 
-  const normalized = zoomToNormalized(zoom, minZoom, maxZoom);
-  // Rotation: dial rotates so current zoom is at top center
-  const dialRotation = -normalized * 180 + 90;
+  // Map zoom to angle: log scale across the full arc
+  const logMin = Math.log2(Math.max(minZoom, 0.5));
+  const logMax = Math.log2(maxZoom);
+  const logCur = Math.log2(clamp(zoom, minZoom, maxZoom));
+  const logRange = logMax - logMin;
 
-  const ticks = [];
-  for (let i = 0; i <= TICK_COUNT; i++) {
-    const frac = i / TICK_COUNT;
-    const ang = frac * 180 - 90;
-    const isMajor = i % 10 === 0;
-    const r1 = isMajor ? R - 18 : R - 10;
-    const r2 = R;
-    const rad = (ang * Math.PI) / 180;
-    ticks.push({
-      x1: CX + r1 * Math.cos(rad),
-      y1: CY + r1 * Math.sin(rad),
-      x2: CX + r2 * Math.cos(rad),
-      y2: CY + r2 * Math.sin(rad),
-      isMajor,
+  // Current zoom position as fraction 0..1
+  const curFrac = (logCur - logMin) / logRange;
+
+  // The dial shows a "window" around the current zoom.
+  // We generate ticks at fixed log-scale intervals, offset by current position.
+  // The center of the arc (angle = -PI/2, i.e. straight up) = current zoom.
+  const arcStart = -Math.PI; // left edge
+  const arcEnd = 0; // right edge
+  const arcSpan = arcEnd - arcStart; // PI
+
+  // Visible zoom range in log2 space: show ±1.5 octaves around current
+  const visibleLogHalf = logRange * 0.5;
+
+  // Tick marks
+  const svgTicks: { x1: number; y1: number; x2: number; y2: number; opacity: number }[] = [];
+  const tickStep = 0.02; // in log2 space
+  for (let logVal = logMin; logVal <= logMax; logVal += tickStep) {
+    const offset = logVal - logCur; // offset from current in log2
+    const normalizedOffset = offset / visibleLogHalf; // -1..1 maps to arc edges
+    if (normalizedOffset < -1 || normalizedOffset > 1) continue;
+    const angle = arcStart + (normalizedOffset + 1) * 0.5 * arcSpan;
+    const isMajor = Math.abs(logVal - Math.round(logVal * 5) / 5) < tickStep * 0.6;
+    const r1 = isMajor ? R - 14 : R - 8;
+    const cos = Math.cos(angle), sin = Math.sin(angle);
+    // Fade edges
+    const edgeFade = 1 - Math.pow(Math.abs(normalizedOffset), 3);
+    svgTicks.push({
+      x1: CX + r1 * cos, y1: CY + r1 * sin,
+      x2: CX + R * cos, y2: CY + R * sin,
+      opacity: edgeFade,
     });
   }
 
-  // Preset positions on dial
-  const presetLabels = presets.map((p) => {
-    const n = zoomToNormalized(p, minZoom, maxZoom);
-    const ang = (n * 180 - 90 + dialRotation) * (Math.PI / 180);
-    return {
-      value: p,
-      x: CX + (R - 30) * Math.cos(ang),
-      y: CY + (R - 30) * Math.sin(ang),
-      visible:
-        CX + (R - 30) * Math.cos(ang) > 15 &&
-        CX + (R - 30) * Math.cos(ang) < DIAL_W - 15 &&
-        CY + (R - 30) * Math.sin(ang) < CY,
-    };
-  });
+  // Preset labels on dial
+  const svgLabels: { x: number; y: number; text: string; opacity: number }[] = [];
+  for (const p of [0.5, 1, 2, 5, 10].filter(v => v >= minZoom && v <= maxZoom)) {
+    const logP = Math.log2(p);
+    const offset = logP - logCur;
+    const normalizedOffset = offset / visibleLogHalf;
+    if (normalizedOffset < -0.9 || normalizedOffset > 0.9) continue;
+    const angle = arcStart + (normalizedOffset + 1) * 0.5 * arcSpan;
+    const lr = R - 28;
+    svgLabels.push({
+      x: CX + lr * Math.cos(angle),
+      y: CY + lr * Math.sin(angle),
+      text: fmt(p),
+      opacity: 1 - Math.pow(Math.abs(normalizedOffset), 2),
+    });
+  }
 
-  // Dial drag handlers
-  const onDialTouchStart = (e: React.TouchEvent) => {
+  // Dial drag
+  const onDialTouch = (e: React.TouchEvent) => {
     e.stopPropagation();
     dialDragStartXRef.current = e.touches[0].clientX;
-    dialDragStartNormRef.current = normalized;
-    showDialWithTimer();
+    dialDragBaseZoomRef.current = zoomRef.current;
+    openDial();
   };
-
-  const onDialTouchMove = (e: React.TouchEvent) => {
+  const onDialMove = (e: React.TouchEvent) => {
     e.stopPropagation();
     const dx = e.touches[0].clientX - dialDragStartXRef.current;
-    // 250px drag = full zoom range
-    const newNorm = dialDragStartNormRef.current + dx / 250;
-    applyZoom(normalizedToZoom(newNorm, minZoom, maxZoom));
+    const logBase = Math.log2(dialDragBaseZoomRef.current);
+    const newLog = logBase + (dx / 150) * visibleLogHalf;
+    applyZoom(Math.pow(2, newLog));
   };
-
-  const onDialTouchEnd = (e: React.TouchEvent) => {
+  const onDialEnd = (e: React.TouchEvent) => {
     e.stopPropagation();
-    scheduleHideDial();
-  };
-
-  // Long press on preset button
-  const onPresetTouchStart = (preset: number) => {
-    longPressTimerRef.current = setTimeout(() => {
-      showDialWithTimer();
-    }, 300);
-  };
-
-  const onPresetTouchEnd = () => {
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = null;
-    }
+    scheduleDismiss();
   };
 
   return (
-    <div className="absolute bottom-2 left-0 right-0 flex justify-center z-10">
+    <div className="absolute bottom-2 left-0 right-0 flex justify-center z-10 pointer-events-none">
       <AnimatePresence mode="wait">
         {showDial ? (
           <motion.div
             key="dial"
-            initial={{ opacity: 0, y: 20, scale: 0.85 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.85 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="relative select-none"
-            style={{ width: DIAL_W, height: DIAL_H, touchAction: "none" }}
-            onTouchStart={onDialTouchStart}
-            onTouchMove={onDialTouchMove}
-            onTouchEnd={onDialTouchEnd}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 15 }}
+            transition={{ type: "spring", damping: 22, stiffness: 300 }}
+            className="pointer-events-auto select-none"
+            style={{ width: W, height: H, touchAction: "none", overflow: "hidden" }}
+            onTouchStart={onDialTouch}
+            onTouchMove={onDialMove}
+            onTouchEnd={onDialEnd}
           >
-            <svg width={DIAL_W} height={DIAL_H} viewBox={`0 0 ${DIAL_W} ${DIAL_H}`}>
-              {/* Background arc */}
+            <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+              {/* Arc background */}
               <path
-                d={`M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY}`}
-                fill="rgba(30,30,30,0.88)"
-                stroke="none"
+                d={`M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY} L ${CX + R - 5} ${CY} A ${R - 5} ${R - 5} 0 0 0 ${CX - R + 5} ${CY} Z`}
+                fill="rgba(25,25,25,0.9)"
               />
-              {/* Rotating tick group */}
-              <g transform={`rotate(${dialRotation}, ${CX}, ${CY})`}>
-                {ticks.map((t, i) => (
-                  <line
-                    key={i}
-                    x1={t.x1}
-                    y1={t.y1}
-                    x2={t.x2}
-                    y2={t.y2}
-                    stroke={t.isMajor ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.25)"}
-                    strokeWidth={t.isMajor ? 1.5 : 0.8}
-                  />
-                ))}
-              </g>
-              {/* Preset labels on dial */}
-              {presetLabels
-                .filter((p) => p.visible)
-                .map((p) => (
-                  <text
-                    key={p.value}
-                    x={p.x}
-                    y={p.y}
-                    fill="rgba(255,255,255,0.7)"
-                    fontSize="11"
-                    fontWeight="600"
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                  >
-                    {formatZoom(p.value)}
-                  </text>
-                ))}
-              {/* Center marker ▼ (fixed at top) */}
+              {/* Ticks */}
+              {svgTicks.map((t, i) => (
+                <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2}
+                  stroke="white" strokeWidth={0.8}
+                  opacity={t.opacity * 0.5} />
+              ))}
+              {/* Labels */}
+              {svgLabels.map((l, i) => (
+                <text key={i} x={l.x} y={l.y}
+                  fill="white" fontSize="11" fontWeight="600"
+                  textAnchor="middle" dominantBaseline="middle"
+                  opacity={l.opacity * 0.8}>
+                  {l.text}
+                </text>
+              ))}
+              {/* Center marker ▼ */}
               <polygon
-                points={`${CX},${CY - R - 2} ${CX - 4},${CY - R - 9} ${CX + 4},${CY - R - 9}`}
+                points={`${CX},${CY - R + 2} ${CX - 4},${CY - R - 5} ${CX + 4},${CY - R - 5}`}
                 fill={YELLOW}
               />
             </svg>
-            {/* Current zoom display */}
-            <div
-              className="absolute left-1/2 -translate-x-1/2 font-bold text-lg"
-              style={{ color: YELLOW, bottom: 12 }}
-            >
-              {formatZoom(zoom)}x
+            {/* Current value */}
+            <div className="absolute inset-x-0 text-center font-bold" style={{ color: YELLOW, bottom: 8, fontSize: 17 }}>
+              {fmt(zoom)}x
             </div>
           </motion.div>
         ) : (
@@ -313,25 +273,22 @@ export default function ZoomControl({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="flex items-center gap-0.5"
+            className="pointer-events-auto flex items-center gap-0.5"
           >
             {presets.map((p) => {
-              const isActive = closestPreset === p;
+              const active = closestPreset === p;
               return (
-                <button
-                  key={p}
+                <button key={p}
                   onClick={() => applyZoom(p)}
-                  onTouchStart={() => onPresetTouchStart(p)}
-                  onTouchEnd={onPresetTouchEnd}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold transition-all ${
-                    isActive ? "bg-[rgba(80,80,80,0.7)]" : ""
-                  }`}
-                  style={{
-                    color: isActive ? YELLOW : "rgba(255,255,255,0.85)",
+                  onTouchStart={() => {
+                    longPressTimerRef.current = setTimeout(openDial, 300);
                   }}
-                >
-                  {formatZoom(p)}
-                  {isActive && "x"}
+                  onTouchEnd={() => {
+                    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                  }}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold transition-all ${active ? "bg-[rgba(70,70,70,0.75)]" : ""}`}
+                  style={{ color: active ? YELLOW : "rgba(255,255,255,0.8)" }}>
+                  {fmt(p)}{active && "x"}
                 </button>
               );
             })}
