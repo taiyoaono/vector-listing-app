@@ -7,6 +7,7 @@ interface ZoomControlProps {
   streamRef: React.RefObject<MediaStream | null>;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   cameraReady: boolean;
+  onZoomChange?: (zoom: number, isNative: boolean) => void;
 }
 
 const YELLOW = "#FFCC33";
@@ -18,6 +19,7 @@ function clamp(v: number, min: number, max: number) {
 export default function ZoomControl({
   streamRef,
   videoRef,
+  onZoomChange,
   cameraReady,
 }: ZoomControlProps) {
   const [zoom, setZoom] = useState(1);
@@ -55,6 +57,7 @@ export default function ZoomControl({
       const clamped = clamp(Math.round(value * 10) / 10, minZoom, maxZoom);
       zoomRef.current = clamped;
       setZoom(clamped);
+      onZoomChange?.(clamped, supportsNativeZoom);
       if (supportsNativeZoom && streamRef.current) {
         const track = streamRef.current.getVideoTracks()[0];
         track
@@ -65,7 +68,7 @@ export default function ZoomControl({
         videoRef.current.style.transformOrigin = "center center";
       }
     },
-    [minZoom, maxZoom, supportsNativeZoom, streamRef, videoRef]
+    [minZoom, maxZoom, supportsNativeZoom, streamRef, videoRef, onZoomChange]
   );
 
   const openDial = useCallback(() => {

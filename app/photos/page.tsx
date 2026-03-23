@@ -27,6 +27,8 @@ export default function PhotosPage() {
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraError, setCameraError] = useState(false);
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+  const currentZoomRef = useRef(1);
+  const nativeZoomRef = useRef(false);
 
   const startCamera = useCallback(async () => {
     try {
@@ -75,11 +77,28 @@ export default function PhotosPage() {
     if (!videoRef.current || !canvasRef.current) return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.drawImage(video, 0, 0);
+    const zoom = currentZoomRef.current;
+    const isNativeZoom = nativeZoomRef.current;
+
+    if (zoom > 1 && !isNativeZoom) {
+      // CSS fallback zoom: crop the center of the video
+      const cropW = video.videoWidth / zoom;
+      const cropH = video.videoHeight / zoom;
+      const cropX = (video.videoWidth - cropW) / 2;
+      const cropY = (video.videoHeight - cropH) / 2;
+      canvas.width = cropW;
+      canvas.height = cropH;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+    } else {
+      // Native zoom or 1x: capture full frame
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(video, 0, 0);
+    }
     const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
     if (phase === "tag") {
       addTagImage(dataUrl);
@@ -223,6 +242,10 @@ export default function PhotosPage() {
           streamRef={streamRef}
           videoRef={videoRef}
           cameraReady={cameraReady}
+          onZoomChange={(z, isNative) => {
+            currentZoomRef.current = z;
+            nativeZoomRef.current = isNative;
+          }}
         />
       </div>
 
