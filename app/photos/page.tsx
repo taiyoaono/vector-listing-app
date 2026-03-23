@@ -100,17 +100,17 @@ export default function PhotosPage() {
       <div className="shrink-0 bg-black/90 px-4 pt-3 pb-2">
         {/* Phase indicator */}
         <div className="flex items-center gap-2 mb-2">
-          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium ${
+          <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium ${
             phase === "tag" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
           }`}>
-            <Tag className="w-3 h-3" />
+            <Tag className="w-3.5 h-3.5" />
             品質タグ {tagImages.length > 0 && `(${tagImages.length})`}
           </div>
-          <ChevronRight className="w-3 h-3 text-gray-600" />
-          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium ${
+          <ChevronRight className="w-4 h-4 text-gray-600" />
+          <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium ${
             phase === "product" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
           }`}>
-            <Camera className="w-3 h-3" />
+            <Camera className="w-3.5 h-3.5" />
             商品写真 {productImages.length > 0 && `(${productImages.length})`}
           </div>
         </div>
@@ -124,8 +124,8 @@ export default function PhotosPage() {
             exit={{ opacity: 0, x: -20 }}
             className="text-center"
           >
-            <div className="text-white text-sm font-semibold">{current.title}</div>
-            <div className="text-gray-400 text-[10px]">{current.subtitle}</div>
+            <div className="text-white text-base font-semibold">{current.title}</div>
+            <div className="text-gray-400 text-xs">{current.subtitle}</div>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -175,22 +175,22 @@ export default function PhotosPage() {
         )}
 
         {/* Controls */}
-        <div className="flex items-center justify-between py-2 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-center justify-between py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           {/* Left action */}
-          <div className="w-20">
+          <div className="w-24">
             {phase === "tag" ? (
               <button
                 onClick={() => setPhase("product")}
-                className="text-[11px] text-gray-500 underline underline-offset-2"
+                className="text-sm text-gray-500 underline underline-offset-2"
               >
                 スキップ
               </button>
             ) : (
               <button
                 onClick={() => setPhase("tag")}
-                className="flex items-center gap-1 text-[11px] text-gray-400"
+                className="flex items-center gap-1 text-sm text-gray-400"
               >
-                <ChevronLeft className="w-3 h-3" />
+                <ChevronLeft className="w-4 h-4" />
                 タグに戻る
               </button>
             )}
@@ -200,25 +200,25 @@ export default function PhotosPage() {
           <button
             onClick={capture}
             disabled={!cameraReady}
-            className="w-14 h-14 rounded-full border-4 border-white flex items-center justify-center active:scale-90 transition-transform disabled:opacity-50"
+            className="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center active:scale-90 transition-transform disabled:opacity-50"
           >
-            <div className="w-10 h-10 rounded-full bg-white" />
+            <div className="w-12 h-12 rounded-full bg-white" />
           </button>
 
           {/* Right action */}
-          <div className="w-20 flex justify-end">
+          <div className="w-24 flex justify-end">
             {phase === "tag" ? (
               <button
                 onClick={() => setPhase("product")}
                 disabled={tagImages.length === 0}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   tagImages.length > 0
                     ? "bg-teal-500 text-white"
                     : "bg-gray-800 text-gray-500"
                 }`}
               >
                 次へ
-                <ChevronRight className="w-3 h-3" />
+                <ChevronRight className="w-4 h-4" />
               </button>
             ) : (
               <button
@@ -227,13 +227,13 @@ export default function PhotosPage() {
                   router.push("/result");
                 }}
                 disabled={!canProceed}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   canProceed
                     ? "bg-teal-500 text-white shadow-lg shadow-teal-400/25"
                     : "bg-gray-800 text-gray-500"
                 }`}
               >
-                <Sparkles className="w-3 h-3" />
+                <Sparkles className="w-4 h-4" />
                 AI解析
               </button>
             )}

@@ -200,18 +200,18 @@ export default function DemoPage() {
                   className="w-full max-w-lg flex flex-col items-center justify-center"
                 >
                   {slideType === "qr" && (
-                    <div className="text-center">
+                    <div className="text-center w-full px-2">
                       <Image
                         src={`/demo/barcode-${String(selectedProduct + 1).padStart(3, "0")}.png`}
                         alt="Barcode"
-                        width={280}
-                        height={280}
-                        className="mx-auto"
+                        width={500}
+                        height={200}
+                        className="mx-auto w-full max-w-[90vw]"
                       />
-                      <div className="mt-3 font-mono text-sm text-gray-500">
+                      <div className="mt-4 font-mono text-lg text-gray-600">
                         {DEMO_PRODUCTS[selectedProduct].managementCode}
                       </div>
-                      <div className="mt-1 text-xs text-gray-400">
+                      <div className="mt-2 text-sm text-gray-400">
                         スマホでこのバーコードをスキャン
                       </div>
                     </div>
@@ -223,18 +223,18 @@ export default function DemoPage() {
                     );
                     if (!tag) return <div className="text-gray-400">品質タグなし</div>;
                     return (
-                      <div className="w-full max-w-sm">
-                        <div className="bg-[#FFFEF5] border-2 border-gray-300 rounded-xl p-6 font-mono text-sm leading-relaxed space-y-2">
-                          <div className="text-xs text-gray-400 text-center mb-3">
-                            ────── 品質表示 ──────
+                      <div className="w-full max-w-md px-2">
+                        <div className="bg-[#FFFEF5] border-2 border-gray-300 rounded-2xl p-8 font-mono text-base leading-loose space-y-3">
+                          <div className="text-sm text-gray-400 text-center mb-4">
+                            ──────── 品質表示 ────────
                           </div>
-                          <div className="font-bold text-base">{tag.company}</div>
-                          <div>{tag.productNumber}</div>
-                          {tag.material && <div>素材: {tag.material}</div>}
-                          {tag.size && <div>{tag.size}</div>}
-                          <div className="pt-2 text-gray-500">{tag.origin}</div>
+                          <div className="font-bold text-xl">{tag.company}</div>
+                          <div className="text-lg">{tag.productNumber}</div>
+                          {tag.material && <div className="text-lg">素材: {tag.material}</div>}
+                          {tag.size && <div className="text-lg">{tag.size}</div>}
+                          <div className="pt-3 text-gray-500 text-base">{tag.origin}</div>
                         </div>
-                        <div className="text-center mt-3 text-xs text-gray-400">
+                        <div className="text-center mt-4 text-sm text-gray-400">
                           この品質タグをスマホで撮影 → AIが自動読み取り
                         </div>
                       </div>
