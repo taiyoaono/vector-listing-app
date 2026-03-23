@@ -69,9 +69,9 @@ const slides = [
   // 2. クライアント要望の整理
   () => (
     <Slide>
-      <div className="w-full max-w-4xl space-y-6">
-        <h2 className="text-3xl font-bold">ご要望の整理</h2>
-        <p className="text-base text-gray-500">Excel要望書で頂いた6つの機能</p>
+      <div className="w-full max-w-5xl space-y-6">
+        <h2 className="text-4xl font-bold">ご要望の整理</h2>
+        <p className="text-lg text-gray-500">Excel要望書で頂いた6つの機能</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
             { num: "1", title: "スマホ撮影→画像一括取込", desc: "POSバーコードスキャン、連続撮影、ZIP→FTP→GRECS反映" },
@@ -81,12 +81,12 @@ const slides = [
             { num: "5", title: "商品タイトル生成", desc: "PSSの商品タイトル自動生成" },
             { num: "6", title: "複数PF出品", desc: "メルカリ・ヤフオク等への同時出品" },
           ].map((item) => (
-            <div key={item.num} className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="w-7 h-7 rounded-full bg-teal-500 text-white text-sm font-bold flex items-center justify-center">{item.num}</span>
-                <span className="text-sm font-bold">{item.title}</span>
+            <div key={item.num} className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="w-8 h-8 rounded-full bg-teal-500 text-white text-base font-bold flex items-center justify-center">{item.num}</span>
+                <span className="text-base font-bold">{item.title}</span>
               </div>
-              <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+              <p className="text-sm text-gray-500 leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -97,36 +97,36 @@ const slides = [
   // 3. 現状の課題
   () => (
     <Slide>
-      <div className="w-full max-w-4xl space-y-8">
-        <h2 className="text-3xl font-bold">現状の課題</h2>
+      <div className="w-full max-w-5xl space-y-8">
+        <h2 className="text-4xl font-bold">現状の課題</h2>
 
-        <div className="bg-red-50 rounded-2xl p-6 border border-red-100">
-          <div className="flex items-center gap-2 mb-4">
-            <AlertTriangle className="w-6 h-6 text-red-500" />
-            <span className="text-base font-bold text-red-700">従来の出品フロー（7ステップ）</span>
+        <div className="bg-red-50 rounded-2xl p-8 border border-red-100">
+          <div className="flex items-center gap-3 mb-5">
+            <AlertTriangle className="w-7 h-7 text-red-500" />
+            <span className="text-lg font-bold text-red-700">従来の出品フロー（7ステップ）</span>
           </div>
-          <div className="flex items-center gap-1 flex-wrap justify-center">
+          <div className="flex items-center gap-1.5 flex-wrap justify-center">
             {["バーコード\nスキャン", "1枚ずつ\n撮影", "画像\n加工待ち", "カテゴリ\n手動入力", "状態\n手動入力", "OCR\n別操作", "タイトル\n手動入力"].map((s, i) => (
               <div key={i} className="flex items-center">
-                {i > 0 && <ArrowRight className="w-4 h-4 text-red-300 mx-1 shrink-0" />}
-                <div className="bg-white rounded-xl px-3 py-2.5 text-center whitespace-pre-line border border-red-200 text-xs font-medium shrink-0">{s}</div>
+                {i > 0 && <ArrowRight className="w-5 h-5 text-red-300 mx-1 shrink-0" />}
+                <div className="bg-white rounded-xl px-4 py-3 text-center whitespace-pre-line border border-red-200 text-sm font-medium shrink-0">{s}</div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 text-center">
-            <div className="text-4xl font-bold text-red-500">7</div>
-            <div className="text-sm text-gray-500 mt-1">ステップ</div>
+        <div className="grid grid-cols-3 gap-5">
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 text-center">
+            <div className="text-5xl font-bold text-red-500">7</div>
+            <div className="text-base text-gray-500 mt-2">ステップ</div>
           </div>
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 text-center">
-            <div className="text-4xl font-bold text-red-500">手動</div>
-            <div className="text-sm text-gray-500 mt-1">入力だらけ</div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 text-center">
+            <div className="text-5xl font-bold text-red-500">手動</div>
+            <div className="text-base text-gray-500 mt-2">入力だらけ</div>
           </div>
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 text-center">
-            <div className="text-4xl font-bold text-red-500">遅い</div>
-            <div className="text-sm text-gray-500 mt-1">1枚ずつ加工</div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 text-center">
+            <div className="text-5xl font-bold text-red-500">遅い</div>
+            <div className="text-base text-gray-500 mt-2">1枚ずつ加工</div>
           </div>
         </div>
       </div>
@@ -264,26 +264,26 @@ const slides = [
   // 8. デモスライド
   () => (
     <Slide>
-      <div className="text-center space-y-6 w-full max-w-3xl">
-        <h2 className="text-4xl font-bold">デモ</h2>
-        <p className="text-lg text-gray-500">実際にアプリを触ってみましょう</p>
+      <div className="text-center space-y-8 w-full max-w-5xl">
+        <h2 className="text-5xl font-bold">デモ</h2>
+        <p className="text-xl text-gray-500">実際にアプリを触ってみましょう</p>
 
-        <div className="flex flex-col md:flex-row items-center gap-8 justify-center">
+        <div className="flex flex-col md:flex-row items-center gap-10 justify-center">
           {/* QR Code */}
           <div className="shrink-0">
             <Image
               src="/demo/app-qr.png"
               alt="App QR Code"
-              width={240}
-              height={240}
+              width={280}
+              height={280}
               className="rounded-2xl"
             />
-            <p className="text-sm text-gray-400 mt-3">スマホでスキャン →</p>
+            <p className="text-base text-gray-400 mt-3">スマホでスキャン →</p>
           </div>
 
           {/* Demo flow */}
-          <div className="bg-gray-50 rounded-2xl p-6 text-left space-y-3 flex-1 max-w-sm">
-            <div className="text-sm font-bold text-gray-700 mb-4">デモの流れ</div>
+          <div className="bg-gray-50 rounded-2xl p-8 text-left space-y-4 flex-1 max-w-md">
+            <div className="text-base font-bold text-gray-700 mb-4">デモの流れ</div>
             {[
               "バーコードをスキャン",
               "品質タグを撮影 → 確認",
@@ -291,9 +291,9 @@ const slides = [
               "AI解析 → 全項目が自動入力",
               "プレビュー → 出品完了",
             ].map((step, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <span className="w-7 h-7 rounded-full bg-teal-500 text-white text-xs font-bold flex items-center justify-center shrink-0">{i + 1}</span>
-                <span className="text-base">{step}</span>
+              <div key={i} className="flex items-center gap-4">
+                <span className="w-8 h-8 rounded-full bg-teal-500 text-white text-sm font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                <span className="text-lg">{step}</span>
               </div>
             ))}
           </div>
@@ -305,24 +305,24 @@ const slides = [
   // 9. 今後の実用化に向けて
   () => (
     <Slide>
-      <div className="w-full max-w-4xl space-y-6">
-        <h2 className="text-3xl font-bold">今後の実用化に向けて</h2>
-        <div className="space-y-3">
+      <div className="w-full max-w-5xl space-y-8">
+        <h2 className="text-4xl font-bold">今後の実用化に向けて</h2>
+        <div className="space-y-4">
           {[
             { icon: Database, title: "GRECS連携", desc: "既存FTPバッチを活用した画像・メタデータの自動取込。基本情報連携APIの段階的開発", priority: "最優先" },
             { icon: Palette, title: "WASABI画像加工連携", desc: "撮影画像の背景白抜き・リサイズ・色補正をWASABIと連携して自動化", priority: "高" },
             { icon: Globe, title: "複数プラットフォーム出品", desc: "メルカリ・ヤフオク等への同時出品機能。各PFのAPI連携", priority: "中" },
           ].map((item) => (
-            <div key={item.title} className="flex items-start gap-4 bg-gray-50 rounded-2xl p-4 border border-gray-100">
-              <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
-                <item.icon className="w-5 h-5" />
+            <div key={item.title} className="flex items-start gap-5 bg-gray-50 rounded-2xl p-6 border border-gray-100">
+              <div className="w-14 h-14 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
+                <item.icon className="w-7 h-7" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-base font-bold">{item.title}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xl font-bold">{item.title}</span>
                   <Badge color="yellow">{item.priority}</Badge>
                 </div>
-                <p className="text-sm text-gray-500 mt-0.5">{item.desc}</p>
+                <p className="text-base text-gray-500 mt-1">{item.desc}</p>
               </div>
             </div>
           ))}
