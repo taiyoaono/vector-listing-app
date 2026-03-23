@@ -35,7 +35,7 @@ export default function ScanPage() {
     scanner
       .start(
         { facingMode: "environment" },
-        { fps: 15, qrbox: { width: 300, height: 150 }, aspectRatio: 1.0 },
+        { fps: 20, qrbox: undefined },
         async (decodedText) => {
           if (hasScannedRef.current) return;
           hasScannedRef.current = true;

@@ -11,7 +11,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     material: "綿100%",
     conditionRank: "S",
     conditionDetails: "タグ付き未使用",
-    managementCode: "VEC-20260301-001",
+    managementCode: "VEC20260301001",
     imageUrl: "https://image.vector-park.jp/images/item/original2/068/2026/03/23/068-202603230113_1.jpg",
     imageUrls: [
       "https://image.vector-park.jp/images/item/original2/068/2026/03/23/068-202603230113_1.jpg",
@@ -31,7 +31,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     material: "ウール混",
     conditionRank: "C",
     conditionDetails: "使用感あり、傷や汚れ見られる",
-    managementCode: "VEC-20260301-002",
+    managementCode: "VEC20260301002",
     imageUrl: "https://image.vector-park.jp/images/item/original2/068/2026/03/23/068-202603230207_1.jpg",
     imageUrls: [
       "https://image.vector-park.jp/images/item/original2/068/2026/03/23/068-202603230207_1.jpg",
@@ -51,7 +51,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     material: "牛革",
     conditionRank: "A",
     conditionDetails: "使用感少ない、ほぼ新品同様",
-    managementCode: "VEC-20260301-003",
+    managementCode: "VEC20260301003",
     imageUrl: "https://image.vector-park.jp/images/item/original2/121/9026/03/22/121-902603220007_1.jpg",
     imageUrls: [
       "https://image.vector-park.jp/images/item/original2/121/9026/03/22/121-902603220007_1.jpg",
@@ -71,7 +71,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     material: "合成繊維",
     conditionRank: "S",
     conditionDetails: "タグ付き未使用",
-    managementCode: "VEC-20260301-004",
+    managementCode: "VEC20260301004",
     imageUrl: "https://image.vector-park.jp/images/item/original2/034/9026/03/22/034-902603220006_1.jpg",
     imageUrls: [
       "https://image.vector-park.jp/images/item/original2/034/9026/03/22/034-902603220006_1.jpg",
@@ -91,7 +91,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     material: "牛革",
     conditionRank: "S",
     conditionDetails: "ほぼ新品同様",
-    managementCode: "VEC-20260301-005",
+    managementCode: "VEC20260301005",
     imageUrl: "https://image.vector-park.jp/images/item/original2/065/2026/03/21/065-202603210207_1.jpg",
     imageUrls: [
       "https://image.vector-park.jp/images/item/original2/065/2026/03/21/065-202603210207_1.jpg",
