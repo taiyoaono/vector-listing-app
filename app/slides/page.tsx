@@ -305,27 +305,10 @@ const slides = [
   // 9. 今後の実用化に向けて
   () => (
     <Slide>
-      <div className="w-full max-w-5xl space-y-6">
+      <div className="w-full max-w-5xl space-y-8">
         <h2 className="text-4xl font-bold">今後の実用化に向けて</h2>
-        <p className="text-base text-gray-500">デモから本番運用へ — 必要な開発ステップ</p>
 
-        {/* Current app → What's missing flow */}
-        <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-          <div className="text-sm font-bold text-gray-700 mb-3">現在のデモ → 本番に必要なもの</div>
-          <div className="flex items-center gap-2 flex-wrap justify-center text-xs">
-            <div className="bg-teal-100 text-teal-700 rounded-xl px-3 py-2 font-medium">撮影・AI解析<br /><span className="text-[10px] opacity-70">（実装済み）</span></div>
-            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
-            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">画像圧縮<br /><span className="text-[10px]">ZIP化</span></div>
-            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
-            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">FTP<br /><span className="text-[10px]">アップロード</span></div>
-            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
-            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">GRECS<br /><span className="text-[10px]">自動取込</span></div>
-            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
-            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">複数PF<br /><span className="text-[10px]">出品連携</span></div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {[
             {
               icon: Database,
@@ -369,20 +352,20 @@ const slides = [
               priority: "並行",
             },
           ].map((item) => (
-            <div key={item.title} className="bg-white rounded-2xl p-5 border border-gray-100">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
-                  <item.icon className="w-5 h-5" />
+            <div key={item.title} className="bg-white rounded-2xl p-6 border border-gray-100">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
+                  <item.icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <div className="text-base font-bold">{item.title}</div>
+                  <div className="text-lg font-bold">{item.title}</div>
                   <Badge color="yellow">{item.priority}</Badge>
                 </div>
               </div>
-              <ul className="space-y-1.5">
+              <ul className="space-y-2">
                 {item.items.map((li, j) => (
-                  <li key={j} className="flex items-start gap-2 text-sm text-gray-600">
-                    <CheckCircle className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                  <li key={j} className="flex items-start gap-2.5 text-base text-gray-600">
+                    <CheckCircle className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
                     {li}
                   </li>
                 ))}
