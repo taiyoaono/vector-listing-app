@@ -210,7 +210,7 @@ export default function ZoomControl({
     e.stopPropagation();
     const dx = e.touches[0].clientX - dialDragStartXRef.current;
     const logBase = Math.log2(dialDragBaseZoomRef.current);
-    const newLog = logBase + (dx / 150) * visibleLogHalf;
+    const newLog = logBase - (dx / 150) * visibleLogHalf;
     applyZoom(Math.pow(2, newLog));
   };
   const onDialEnd = (e: React.TouchEvent) => {

@@ -35,7 +35,7 @@ export const useListingStore = create<ListingStore>((set) => ({
       productImages: state.productImages.filter((_, i) => i !== index),
     })),
   addTagImage: (image) =>
-    set((state) => ({ tagImages: [...state.tagImages, image] })),
+    set({ tagImages: [image] }),
   removeTagImage: (index) =>
     set((state) => ({
       tagImages: state.tagImages.filter((_, i) => i !== index),
