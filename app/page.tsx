@@ -6,7 +6,7 @@ import { Camera, ScanBarcode, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="h-screen overflow-hidden flex flex-col items-center justify-center px-6">
+    <div className="h-[100dvh] overflow-hidden flex flex-col items-center justify-center px-6 mx-auto max-w-md">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Html5Qrcode } from "html5-qrcode";
 import { ScanBarcode, CheckCircle } from "lucide-react";
@@ -9,7 +8,6 @@ import { useListingStore } from "@/lib/store";
 import { findProductByCode } from "@/lib/demo-products";
 
 export default function ScanPage() {
-  const router = useRouter();
   const setScannedCode = useListingStore((s) => s.setScannedCode);
   const [isScanning, setIsScanning] = useState(false);
   const [scannedProduct, setScannedProduct] = useState<{
@@ -35,7 +33,6 @@ export default function ScanPage() {
           const product = findProductByCode(decodedText);
           if (product) {
             setScannedCode(decodedText);
-            // Stop scanner first, then show overlay
             try {
               await scanner.stop();
             } catch {
@@ -46,9 +43,8 @@ export default function ScanPage() {
               name: product.name,
               code: decodedText,
             });
-            // Navigate after showing success overlay
             setTimeout(() => {
-              router.push("/photos");
+              window.location.href = "/photos";
             }, 1200);
           } else {
             hasScannedRef.current = false;
@@ -57,17 +53,15 @@ export default function ScanPage() {
         () => {}
       )
       .then(() => setIsScanning(true))
-      .catch(() => {
-        // Camera not available
-      });
+      .catch(() => {});
 
     return () => {
       scanner.stop().catch(() => {});
     };
-  }, [router, setScannedCode]);
+  }, [setScannedCode]);
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col">
+    <div className="h-[100dvh] overflow-hidden flex flex-col mx-auto max-w-md">
       {/* Step Indicator */}
       <div className="px-5 py-4 shrink-0">
         <div className="flex items-center gap-2 text-xs">
@@ -87,8 +81,8 @@ export default function ScanPage() {
       </div>
 
       {/* Scanner */}
-      <div className="flex-1 flex flex-col items-center justify-center px-5 gap-6 relative">
-        <div className="relative w-full aspect-square max-w-[300px] rounded-2xl overflow-hidden bg-black">
+      <div className="flex-1 flex flex-col items-center justify-center px-5 gap-6 relative min-h-0">
+        <div className="relative w-full aspect-square max-w-[280px] rounded-2xl overflow-hidden bg-black">
           <div id="qr-reader" className="w-full h-full [&_video]:object-cover [&_img]:hidden [&>div:last-child]:hidden" />
           {!isScanning && !scannedProduct && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/80">
@@ -97,11 +91,10 @@ export default function ScanPage() {
               </div>
             </div>
           )}
-          {/* Scan overlay frame */}
           {!scannedProduct && (
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[200px] h-[200px] border-2 border-emerald-400/50 rounded-xl" />
+                <div className="w-[180px] h-[180px] border-2 border-emerald-400/50 rounded-xl" />
               </div>
             </div>
           )}
@@ -147,7 +140,7 @@ export default function ScanPage() {
             <button
               onClick={() => {
                 scannerRef.current?.stop().catch(() => {});
-                router.push("/photos");
+                window.location.href = "/photos";
               }}
               className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
             >

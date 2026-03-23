@@ -3,10 +3,10 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, X, Sparkles, HelpCircle, Tag, Image as ImageIcon } from "lucide-react";
+import { X, Sparkles, Tag, Camera, ChevronLeft, ChevronRight } from "lucide-react";
 import { useListingStore } from "@/lib/store";
 
-type Tab = "product" | "tag";
+type Phase = "tag" | "product";
 
 export default function PhotosPage() {
   const router = useRouter();
@@ -19,8 +19,7 @@ export default function PhotosPage() {
     removeTagImage,
   } = useListingStore();
 
-  const [activeTab, setActiveTab] = useState<Tab>("tag");
-  const [showHelp, setShowHelp] = useState(false);
+  const [phase, setPhase] = useState<Phase>("tag");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -38,9 +37,7 @@ export default function PhotosPage() {
       }
     } catch {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -69,70 +66,71 @@ export default function PhotosPage() {
     if (!ctx) return;
     ctx.drawImage(video, 0, 0);
     const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
-    if (activeTab === "product") {
-      addProductImage(dataUrl);
-    } else {
+    if (phase === "tag") {
       addTagImage(dataUrl);
+    } else {
+      addProductImage(dataUrl);
     }
   };
 
-  const images = activeTab === "product" ? productImages : tagImages;
-  const removeImage =
-    activeTab === "product" ? removeProductImage : removeTagImage;
-
+  const images = phase === "tag" ? tagImages : productImages;
+  const removeImage = phase === "tag" ? removeTagImage : removeProductImage;
   const canProceed = productImages.length > 0;
 
+  const phaseConfig = {
+    tag: {
+      icon: Tag,
+      title: "品質タグを撮影してください",
+      subtitle: "ブランド名・素材・品番が記載されたタグ",
+      count: tagImages.length,
+    },
+    product: {
+      icon: Camera,
+      title: "商品写真を撮影してください",
+      subtitle: "全体・各アングル・傷や汚れのアップ",
+      count: productImages.length,
+    },
+  };
+
+  const current = phaseConfig[phase];
+
   return (
-    <div className="h-screen flex flex-col bg-black overflow-hidden relative">
-      {/* Header: Step + Tabs */}
-      <div className="shrink-0">
-        {/* Step Indicator */}
-        <div className="px-5 py-2 bg-black/80">
-          <div className="flex items-center gap-2 text-xs">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600/30 text-emerald-300 text-[10px] font-bold">1</span>
-            <div className="flex-1 h-px bg-gray-700" />
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">2</span>
-            <span className="font-medium text-emerald-400">撮影</span>
-            <div className="flex-1 h-px bg-gray-700" />
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-700 text-gray-500 text-[10px] font-bold">3</span>
+    <div className="h-[100dvh] flex flex-col bg-black overflow-hidden relative">
+      {/* Header */}
+      <div className="shrink-0 bg-black/90 px-4 pt-3 pb-2">
+        {/* Phase indicator */}
+        <div className="flex items-center gap-2 mb-2">
+          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium ${
+            phase === "tag" ? "bg-emerald-600 text-white" : "bg-gray-700 text-gray-400"
+          }`}>
+            <Tag className="w-3 h-3" />
+            品質タグ {tagImages.length > 0 && `(${tagImages.length})`}
+          </div>
+          <ChevronRight className="w-3 h-3 text-gray-600" />
+          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium ${
+            phase === "product" ? "bg-emerald-600 text-white" : "bg-gray-700 text-gray-400"
+          }`}>
+            <Camera className="w-3 h-3" />
+            商品写真 {productImages.length > 0 && `(${productImages.length})`}
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex bg-black/80 px-5 pb-2">
-          <button
-            onClick={() => setActiveTab("tag")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              activeTab === "tag" ? "bg-emerald-600 text-white" : "bg-gray-800 text-gray-400"
-            }`}
+        {/* Phase instruction */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={phase}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="text-center"
           >
-            <Tag className="w-3.5 h-3.5" />
-            品質タグ
-            {tagImages.length > 0 && (
-              <span className="bg-white/20 rounded-full px-1.5 text-[10px]">{tagImages.length}</span>
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("product")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ml-2 ${
-              activeTab === "product" ? "bg-emerald-600 text-white" : "bg-gray-800 text-gray-400"
-            }`}
-          >
-            <ImageIcon className="w-3.5 h-3.5" />
-            商品写真
-            {productImages.length > 0 && (
-              <span className="bg-white/20 rounded-full px-1.5 text-[10px]">{productImages.length}</span>
-            )}
-          </button>
-          {activeTab === "tag" && (
-            <button onClick={() => setShowHelp(true)} className="ml-auto text-gray-400 hover:text-white">
-              <HelpCircle className="w-5 h-5" />
-            </button>
-          )}
-        </div>
+            <div className="text-white text-sm font-semibold">{current.title}</div>
+            <div className="text-gray-400 text-[10px]">{current.subtitle}</div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Camera View - fills remaining space */}
+      {/* Camera View */}
       <div className="flex-1 min-h-0 relative">
         <video
           ref={videoRef}
@@ -149,15 +147,15 @@ export default function PhotosPage() {
         )}
       </div>
 
-      {/* Footer: Thumbnails + Controls */}
-      <div className="shrink-0 bg-black/90 backdrop-blur-sm">
-        {/* Thumbnail Strip */}
+      {/* Footer */}
+      <div className="shrink-0 bg-black/90">
+        {/* Thumbnails */}
         {images.length > 0 && (
           <div className="flex gap-2 px-4 py-2 overflow-x-auto">
             <AnimatePresence>
               {images.map((img, i) => (
                 <motion.div
-                  key={i}
+                  key={`${phase}-${i}`}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}
@@ -177,11 +175,25 @@ export default function PhotosPage() {
         )}
 
         {/* Controls */}
-        <div className="flex items-center justify-between py-3 px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-          <div className="text-[10px] text-gray-400 w-16">
-            商品 {productImages.length}枚
-            <br />
-            タグ {tagImages.length}枚
+        <div className="flex items-center justify-between py-2 px-4 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+          {/* Left action */}
+          <div className="w-20">
+            {phase === "tag" ? (
+              <button
+                onClick={() => setPhase("product")}
+                className="text-[11px] text-gray-500 underline underline-offset-2"
+              >
+                スキップ
+              </button>
+            ) : (
+              <button
+                onClick={() => setPhase("tag")}
+                className="flex items-center gap-1 text-[11px] text-gray-400"
+              >
+                <ChevronLeft className="w-3 h-3" />
+                タグに戻る
+              </button>
+            )}
           </div>
 
           {/* Shutter */}
@@ -193,58 +205,41 @@ export default function PhotosPage() {
             <div className="w-10 h-10 rounded-full bg-white" />
           </button>
 
-          {/* Next */}
-          <button
-            onClick={() => {
-              streamRef.current?.getTracks().forEach((t) => t.stop());
-              router.push("/result");
-            }}
-            disabled={!canProceed}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-              canProceed
-                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/25"
-                : "bg-gray-800 text-gray-500"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            AI解析
-          </button>
+          {/* Right action */}
+          <div className="w-20 flex justify-end">
+            {phase === "tag" ? (
+              <button
+                onClick={() => setPhase("product")}
+                disabled={tagImages.length === 0}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
+                  tagImages.length > 0
+                    ? "bg-emerald-600 text-white"
+                    : "bg-gray-800 text-gray-500"
+                }`}
+              >
+                次へ
+                <ChevronRight className="w-3 h-3" />
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  streamRef.current?.getTracks().forEach((t) => t.stop());
+                  router.push("/result");
+                }}
+                disabled={!canProceed}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
+                  canProceed
+                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/25"
+                    : "bg-gray-800 text-gray-500"
+                }`}
+              >
+                <Sparkles className="w-3 h-3" />
+                AI解析
+              </button>
+            )}
+          </div>
         </div>
       </div>
-
-      {/* Help Modal */}
-      <AnimatePresence>
-        {showHelp && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-black/80 flex items-center justify-center p-8"
-            onClick={() => setShowHelp(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-white rounded-2xl p-6 max-w-sm text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Tag className="w-8 h-8 mx-auto mb-3 text-emerald-600" />
-              <h3 className="font-semibold mb-2">品質タグとは？</h3>
-              <p className="text-xs text-gray-600 mb-4">
-                衣類の内側についているタグで、ブランド名・素材・品番・サイズなどが記載されています。
-                AIが自動で読み取り、商品情報を入力します。
-              </p>
-              <button
-                onClick={() => setShowHelp(false)}
-                className="mt-2 px-6 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium"
-              >
-                閉じる
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

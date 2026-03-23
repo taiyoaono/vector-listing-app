@@ -35,10 +35,8 @@ export default function RootLayout({
       lang="ja"
       className={`${inter.variable} ${notoSansJP.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-[#FAFBFC] text-[#1A1A2E] font-sans">
-        <div className="mx-auto max-w-md min-h-screen flex flex-col">
-          {children}
-        </div>
+      <body className="bg-[#FAFBFC] text-[#1A1A2E] font-sans">
+        {children}
         <Toaster position="top-center" />
       </body>
     </html>
