@@ -43,19 +43,16 @@ export default function ScanPage() {
           const product = findProductByCode(decodedText);
           if (product) {
             setScannedCode(decodedText);
-            try {
-              await scanner.stop();
-            } catch {
-              // ignore
-            }
+            // Stop scanner - don't await, just fire and forget
+            scanner.stop().catch(() => {});
             setScannedProduct({
               brand: product.brand,
               name: product.name,
               code: decodedText,
             });
             setTimeout(() => {
-              window.location.href = "/photos";
-            }, 1200);
+              window.location.replace("/photos");
+            }, 1500);
           } else {
             hasScannedRef.current = false;
           }
@@ -150,7 +147,7 @@ export default function ScanPage() {
             <button
               onClick={() => {
                 scannerRef.current?.stop().catch(() => {});
-                window.location.href = "/photos";
+                window.location.replace("/photos");
               }}
               className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
             >

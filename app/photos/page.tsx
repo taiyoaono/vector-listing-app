@@ -59,6 +59,16 @@ export default function PhotosPage() {
     };
   }, [startCamera]);
 
+  // Re-attach stream to video when returning from tag-preview
+  useEffect(() => {
+    if ((phase === "tag" || phase === "product") && streamRef.current && videoRef.current) {
+      if (!videoRef.current.srcObject) {
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  }, [phase]);
+
   const capture = () => {
     if (!videoRef.current || !canvasRef.current) return;
     const video = videoRef.current;
