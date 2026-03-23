@@ -134,7 +134,7 @@ export default function ResultPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="relative z-10 text-center space-y-6"
         >
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-600 to-teal-700 shadow-lg shadow-teal-500/25 flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 shadow-lg shadow-teal-400/25 flex items-center justify-center">
             <Sparkles className="w-8 h-8 text-white animate-pulse" />
           </div>
           <div className="space-y-2">
@@ -156,7 +156,7 @@ export default function ResultPage() {
               <div
                 key={i}
                 className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                  i <= loadingStep ? "bg-teal-600" : "bg-gray-200"
+                  i <= loadingStep ? "bg-teal-500" : "bg-gray-200"
                 }`}
               />
             ))}
@@ -173,18 +173,18 @@ export default function ResultPage() {
       {/* Step Indicator */}
       <div className="px-5 py-4">
         <div className="flex items-center gap-2 text-xs">
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-600/30 text-teal-400 text-[10px] font-bold">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500/30 text-teal-300 text-[10px] font-bold">
             1
           </span>
           <div className="flex-1 h-px bg-teal-200" />
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-600/30 text-teal-400 text-[10px] font-bold">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500/30 text-teal-300 text-[10px] font-bold">
             2
           </span>
           <div className="flex-1 h-px bg-teal-200" />
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] font-bold">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-[10px] font-bold">
             3
           </span>
-          <span className="font-medium text-teal-600">確認・編集</span>
+          <span className="font-medium text-teal-500">確認・編集</span>
         </div>
       </div>
 
@@ -219,7 +219,7 @@ export default function ResultPage() {
                 onClick={() => updateAnalysis({ gender: g })}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                   analysis.gender === g
-                    ? "bg-teal-600 text-white"
+                    ? "bg-teal-500 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -237,12 +237,12 @@ export default function ResultPage() {
                 {i > 0 && (
                   <ChevronRight className="w-3 h-3 text-gray-300" />
                 )}
-                <span className="text-teal-600 font-medium">{cat}</span>
+                <span className="text-teal-500 font-medium">{cat}</span>
               </span>
             ))}
             <button
               onClick={() => startEdit("category", analysis.category.join(" ＞ "))}
-              className="ml-2 text-gray-400 hover:text-teal-600"
+              className="ml-2 text-gray-400 hover:text-teal-500"
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
@@ -287,7 +287,7 @@ export default function ResultPage() {
                 }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
                   analysis.color.includes(c)
-                    ? "bg-teal-600 text-white"
+                    ? "bg-teal-500 text-white"
                     : "bg-gray-100 text-gray-600"
                 }`}
               >
@@ -311,7 +311,7 @@ export default function ResultPage() {
                 }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
                   analysis.pattern.includes(p)
-                    ? "bg-teal-600 text-white"
+                    ? "bg-teal-500 text-white"
                     : "bg-gray-100 text-gray-600"
                 }`}
               >
@@ -449,7 +449,7 @@ export default function ResultPage() {
                 onClick={() => setSelectedTitleIndex(i)}
                 className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
                   selectedTitleIndex === i
-                    ? "bg-teal-50 border-2 border-teal-600 text-teal-900"
+                    ? "bg-teal-50 border-2 border-teal-500 text-teal-900"
                     : "bg-gray-50 border border-gray-200 text-gray-700"
                 }`}
               >
@@ -475,7 +475,7 @@ export default function ResultPage() {
         <div className="max-w-md mx-auto">
           <button
             onClick={() => router.push("/preview")}
-            className="w-full h-12 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold text-sm shadow-lg shadow-teal-500/25 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold text-sm shadow-lg shadow-teal-400/25 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
           >
             <Eye className="w-4 h-4" />
             プレビューを確認
@@ -532,7 +532,7 @@ function EditableSection({
           />
           <button
             onClick={onConfirm}
-            className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center"
+            className="w-8 h-8 rounded-lg bg-teal-500 text-white flex items-center justify-center"
           >
             <Check className="w-4 h-4" />
           </button>
@@ -542,7 +542,7 @@ function EditableSection({
           <span className="text-sm font-medium">{value}</span>
           <button
             onClick={onEdit}
-            className="text-gray-400 hover:text-teal-600"
+            className="text-gray-400 hover:text-teal-500"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>

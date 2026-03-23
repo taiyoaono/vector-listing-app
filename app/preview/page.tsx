@@ -67,14 +67,14 @@ export default function PreviewPage() {
   // Completed screen
   if (completed) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center px-8">
+      <div className="flex-1 flex flex-col items-center justify-start pt-[25vh] px-8">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", duration: 0.5 }}
           className="text-center space-y-6"
         >
-          <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-teal-600 to-teal-700 shadow-lg shadow-teal-500/25 flex items-center justify-center">
+          <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-lg shadow-teal-400/25 flex items-center justify-center">
             <PartyPopper className="w-10 h-10 text-white" />
           </div>
           <div className="space-y-2">
@@ -88,7 +88,7 @@ export default function PreviewPage() {
               reset();
               router.push("/");
             }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold text-sm shadow-lg shadow-teal-500/25 active:scale-[0.98] transition-transform"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold text-sm shadow-lg shadow-teal-400/25 active:scale-[0.98] transition-transform"
           >
             <RotateCcw className="w-4 h-4" />
             次の商品を出品
@@ -104,7 +104,7 @@ export default function PreviewPage() {
       <div className="px-5 py-3 flex items-center justify-between">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1 text-sm text-teal-600"
+          className="flex items-center gap-1 text-sm text-teal-500"
         >
           <ChevronLeft className="w-4 h-4" />
           編集に戻る
@@ -178,7 +178,7 @@ export default function PreviewPage() {
               </span>
               <h1 className="text-lg font-bold leading-tight">{title}</h1>
             </div>
-            <div className="text-xl font-bold text-teal-600">¥ —</div>
+            <div className="text-xl font-bold text-teal-500">¥ —</div>
           </div>
 
           {/* Info Table */}
@@ -263,7 +263,7 @@ export default function PreviewPage() {
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSubmit}
-            className="w-full h-12 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold text-sm shadow-lg shadow-teal-500/25 active:scale-[0.98] transition-transform"
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold text-sm shadow-lg shadow-teal-400/25 active:scale-[0.98] transition-transform"
           >
             出品する
           </button>

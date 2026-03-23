@@ -65,10 +65,10 @@ export default function ScanPage() {
       {/* Step Indicator */}
       <div className="px-5 py-4 shrink-0">
         <div className="flex items-center gap-2 text-xs">
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-600 text-white text-[10px] font-bold">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-teal-500 text-white text-[10px] font-bold">
             1
           </span>
-          <span className="font-medium text-teal-600">スキャン</span>
+          <span className="font-medium text-teal-500">スキャン</span>
           <div className="flex-1 h-px bg-gray-200" />
           <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-200 text-gray-400 text-[10px] font-bold">
             2
@@ -94,7 +94,7 @@ export default function ScanPage() {
           {!scannedProduct && (
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[180px] h-[180px] border-2 border-teal-400/50 rounded-xl" />
+                <div className="w-[180px] h-[180px] border-2 border-teal-300/50 rounded-xl" />
               </div>
             </div>
           )}
@@ -109,7 +109,7 @@ export default function ScanPage() {
               className="absolute inset-0 z-20 flex items-center justify-center bg-white/95 backdrop-blur-sm"
             >
               <div className="text-center space-y-3">
-                <CheckCircle className="w-12 h-12 text-teal-600 mx-auto" />
+                <CheckCircle className="w-12 h-12 text-teal-500 mx-auto" />
                 <div>
                   <div className="text-lg font-bold">{scannedProduct.brand}</div>
                   <div className="text-sm text-gray-600">{scannedProduct.name}</div>
@@ -117,7 +117,7 @@ export default function ScanPage() {
                 <div className="text-xs text-gray-400 font-mono">
                   {scannedProduct.code}
                 </div>
-                <div className="text-xs text-teal-600 animate-pulse">
+                <div className="text-xs text-teal-500 animate-pulse">
                   撮影画面に移動します...
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default function ScanPage() {
           <>
             <div className="text-center space-y-1">
               <div className="flex items-center justify-center gap-2 text-sm font-medium">
-                <ScanBarcode className="w-4 h-4 text-teal-600" />
+                <ScanBarcode className="w-4 h-4 text-teal-500" />
                 QRコードをスキャン
               </div>
               <p className="text-xs text-muted-foreground">

@@ -110,7 +110,7 @@ export default function DemoPage() {
               </span>
             </div>
             <div className="p-3">
-              <div className="text-xs font-semibold text-teal-600">
+              <div className="text-xs font-semibold text-teal-500">
                 {product.brand}
               </div>
               <div className="text-xs text-gray-700 truncate">
@@ -157,7 +157,7 @@ export default function DemoPage() {
                   onClick={() => setSlideType(type)}
                   className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
                     slideType === type
-                      ? "bg-teal-600 text-white"
+                      ? "bg-teal-500 text-white"
                       : "bg-white text-gray-500 border border-gray-200"
                   }`}
                 >
@@ -271,7 +271,7 @@ export default function DemoPage() {
                     }}
                     className={`shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-colors ${
                       i === selectedProduct
-                        ? "border-teal-600"
+                        ? "border-teal-500"
                         : "border-transparent opacity-50"
                     }`}
                   >
