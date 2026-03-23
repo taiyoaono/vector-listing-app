@@ -266,33 +266,61 @@ export default function ZoomControl({
               {fmt(zoom)}x
             </div>
           </motion.div>
-        ) : (
-          <motion.div
-            key="presets"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            className="pointer-events-auto flex items-center gap-0.5"
-          >
-            {presets.map((p) => {
-              const active = closestPreset === p;
-              return (
-                <button key={p}
-                  onClick={() => applyZoom(p)}
-                  onTouchStart={() => {
-                    longPressTimerRef.current = setTimeout(openDial, 300);
-                  }}
-                  onTouchEnd={() => {
-                    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-                  }}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold transition-all ${active ? "bg-[rgba(70,70,70,0.75)]" : ""}`}
-                  style={{ color: active ? YELLOW : "rgba(255,255,255,0.8)" }}>
-                  {fmt(p)}{active && "x"}
-                </button>
-              );
-            })}
-          </motion.div>
+        ) : (() => {
+          // iPhone behavior: if zoom is exactly a preset, show all presets.
+          // If zoom is a non-preset value (e.g. 1.7x), show only current value.
+          const isExactPreset = presets.some((p) => Math.abs(p - zoom) < 0.05);
+          return isExactPreset ? (
+            <motion.div
+              key="presets"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="pointer-events-auto flex items-center gap-0.5"
+            >
+              {presets.map((p) => {
+                const active = closestPreset === p;
+                return (
+                  <button key={p}
+                    onClick={() => applyZoom(p)}
+                    onTouchStart={() => {
+                      longPressTimerRef.current = setTimeout(openDial, 300);
+                    }}
+                    onTouchEnd={() => {
+                      if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                    }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold transition-all ${active ? "bg-[rgba(70,70,70,0.75)]" : ""}`}
+                    style={{ color: active ? YELLOW : "rgba(255,255,255,0.8)" }}>
+                    {fmt(p)}{active && "x"}
+                  </button>
+                );
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="single"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="pointer-events-auto"
+            >
+              <button
+                onClick={() => applyZoom(1)}
+                onTouchStart={() => {
+                  longPressTimerRef.current = setTimeout(openDial, 300);
+                }}
+                onTouchEnd={() => {
+                  if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                }}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold bg-[rgba(70,70,70,0.75)]"
+                style={{ color: YELLOW }}>
+                {fmt(zoom)}x
+              </button>
+            </motion.div>
+          );
+        })()
         )}
       </AnimatePresence>
     </div>

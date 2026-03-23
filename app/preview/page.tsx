@@ -31,7 +31,9 @@ export default function PreviewPage() {
     );
   }
 
-  const title = analysis.titles[selectedTitleIndex] || analysis.titles[0];
+  const title = selectedTitleIndex === -1
+    ? (analysis.titles[3] || analysis.titles[0])
+    : (analysis.titles[selectedTitleIndex] || analysis.titles[0]);
   const rankInfo = CONDITION_RANKS.find(
     (r) => r.rank === analysis.conditionRank
   );

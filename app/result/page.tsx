@@ -456,6 +456,31 @@ export default function ResultPage() {
                 {title}
               </button>
             ))}
+            {/* Custom title option */}
+            <button
+              onClick={() => setSelectedTitleIndex(-1)}
+              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                selectedTitleIndex === -1
+                  ? "bg-teal-50 border-2 border-teal-500 text-teal-900"
+                  : "bg-gray-50 border border-gray-200 text-gray-700"
+              }`}
+            >
+              自分で入力する
+            </button>
+            {selectedTitleIndex === -1 && (
+              <input
+                autoFocus
+                type="text"
+                placeholder="タイトルを入力..."
+                value={analysis.titles[3] || ""}
+                onChange={(e) => {
+                  const newTitles = [...analysis.titles];
+                  newTitles[3] = e.target.value;
+                  updateAnalysis({ titles: newTitles });
+                }}
+                className="w-full h-10 rounded-xl border border-teal-300 px-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+              />
+            )}
           </div>
         </Section>
 
