@@ -59,7 +59,7 @@ export default function DemoPage() {
 
   const slideTypes: SlideType[] = ["qr", "tag", "image"];
   const slideLabels: Record<SlideType, string> = {
-    qr: "QRコード",
+    qr: "バーコード",
     tag: "品質タグ",
     image: "商品写真",
   };
@@ -85,7 +85,7 @@ export default function DemoPage() {
       <div className="text-center mb-6">
         <h1 className="text-xl font-bold mb-1">デモ用素材</h1>
         <p className="text-xs text-gray-500">
-          商品をタップ → QRコード・品質タグ・商品写真を表示
+          商品をタップ → バーコード・品質タグ・商品写真を表示
         </p>
       </div>
 
@@ -202,8 +202,8 @@ export default function DemoPage() {
                   {slideType === "qr" && (
                     <div className="text-center">
                       <Image
-                        src={`/demo/qr-${String(selectedProduct + 1).padStart(3, "0")}.png`}
-                        alt="QR Code"
+                        src={`/demo/barcode-${String(selectedProduct + 1).padStart(3, "0")}.png`}
+                        alt="Barcode"
                         width={280}
                         height={280}
                         className="mx-auto"
@@ -212,7 +212,7 @@ export default function DemoPage() {
                         {DEMO_PRODUCTS[selectedProduct].managementCode}
                       </div>
                       <div className="mt-1 text-xs text-gray-400">
-                        スマホでこのQRコードをスキャン
+                        スマホでこのバーコードをスキャン
                       </div>
                     </div>
                   )}

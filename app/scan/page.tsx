@@ -25,7 +25,7 @@ export default function ScanPage() {
     scanner
       .start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { fps: 10, qrbox: { width: 280, height: 100 } },
         async (decodedText) => {
           if (hasScannedRef.current) return;
           hasScannedRef.current = true;
@@ -94,7 +94,7 @@ export default function ScanPage() {
           {!scannedProduct && (
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[180px] h-[180px] border-2 border-teal-300/50 rounded-xl" />
+                <div className="w-[260px] h-[80px] border-2 border-teal-300/50 rounded-xl" />
               </div>
             </div>
           )}
@@ -130,10 +130,10 @@ export default function ScanPage() {
             <div className="text-center space-y-1">
               <div className="flex items-center justify-center gap-2 text-sm font-medium">
                 <ScanBarcode className="w-4 h-4 text-teal-500" />
-                QRコードをスキャン
+                バーコードをスキャン
               </div>
               <p className="text-xs text-muted-foreground">
-                商品のバーコードまたはQRコードをかざしてください
+                商品のバーコードまたはバーコードをかざしてください
               </p>
             </div>
 
