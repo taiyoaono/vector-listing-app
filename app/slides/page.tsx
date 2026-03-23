@@ -257,11 +257,6 @@ const slides = [
           ))}
         </div>
 
-        <div className="bg-teal-50 rounded-2xl p-5 border border-teal-100 text-center">
-          <p className="text-sm text-teal-700">
-            <span className="font-bold">iPhone風ズーム機能</span>も実装 — ピンチズーム＋ダイヤルゲージで品質タグの細かい文字もしっかり撮影
-          </p>
-        </div>
       </div>
     </Slide>
   ),
@@ -279,11 +274,11 @@ const slides = [
             <Image
               src="/demo/app-qr.png"
               alt="App QR Code"
-              width={180}
-              height={180}
+              width={240}
+              height={240}
               className="rounded-2xl"
             />
-            <p className="text-xs text-gray-400 mt-2">スマホでスキャン</p>
+            <p className="text-sm text-gray-400 mt-3">スマホでスキャン →</p>
           </div>
 
           {/* Demo flow */}
