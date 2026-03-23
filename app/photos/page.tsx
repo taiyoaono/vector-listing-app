@@ -25,6 +25,7 @@ export default function PhotosPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
+  const [cameraError, setCameraError] = useState(false);
   const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   const startCamera = useCallback(async () => {
@@ -48,6 +49,7 @@ export default function PhotosPage() {
         }
       } catch {
         setCameraReady(false);
+        setCameraError(true);
       }
     }
   }, []);
@@ -201,7 +203,19 @@ export default function PhotosPage() {
         <canvas ref={canvasRef} className="hidden" />
         {!cameraReady && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
-            <div className="text-white text-sm animate-pulse">カメラを起動中...</div>
+            {cameraError ? (
+              <div className="text-center space-y-3">
+                <div className="text-white text-sm">カメラを起動できません</div>
+                <button
+                  onClick={() => { setCameraError(false); startCamera(); }}
+                  className="px-4 py-2 rounded-xl bg-teal-500 text-white text-sm font-medium"
+                >
+                  リトライ
+                </button>
+              </div>
+            ) : (
+              <div className="text-white text-sm animate-pulse">カメラを起動中...</div>
+            )}
           </div>
         )}
 

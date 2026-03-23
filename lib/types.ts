@@ -44,6 +44,7 @@ export interface ListingData {
   tagImages: string[];
   analysis: AnalysisResult | null;
   selectedTitleIndex: number;
+  customTitle: string;
   measurements: Record<string, string>;
   accessories: string;
 }

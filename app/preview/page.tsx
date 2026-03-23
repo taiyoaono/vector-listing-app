@@ -15,6 +15,7 @@ export default function PreviewPage() {
     productImages,
     analysis,
     selectedTitleIndex,
+    customTitle,
     measurements,
     accessories,
     reset,
@@ -32,7 +33,7 @@ export default function PreviewPage() {
   }
 
   const title = selectedTitleIndex === -1
-    ? (analysis.titles[3] || analysis.titles[0])
+    ? (customTitle || analysis.titles[0])
     : (analysis.titles[selectedTitleIndex] || analysis.titles[0]);
   const rankInfo = CONDITION_RANKS.find(
     (r) => r.rank === analysis.conditionRank

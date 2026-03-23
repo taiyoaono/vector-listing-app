@@ -10,6 +10,7 @@ interface ListingStore extends ListingData {
   setAnalysis: (analysis: AnalysisResult) => void;
   updateAnalysis: (updates: Partial<AnalysisResult>) => void;
   setSelectedTitleIndex: (index: number) => void;
+  setCustomTitle: (title: string) => void;
   setMeasurement: (key: string, value: string) => void;
   setAccessories: (value: string) => void;
   reset: () => void;
@@ -21,6 +22,7 @@ const initialState: ListingData = {
   tagImages: [],
   analysis: null,
   selectedTitleIndex: 0,
+  customTitle: "",
   measurements: {},
   accessories: "",
 };
@@ -46,6 +48,7 @@ export const useListingStore = create<ListingStore>((set) => ({
       analysis: state.analysis ? { ...state.analysis, ...updates } : null,
     })),
   setSelectedTitleIndex: (index) => set({ selectedTitleIndex: index }),
+  setCustomTitle: (title) => set({ customTitle: title }),
   setMeasurement: (key, value) =>
     set((state) => ({
       measurements: { ...state.measurements, [key]: value },

@@ -12,6 +12,7 @@ import {
   X,
   Eye,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useListingStore } from "@/lib/store";
 import { getMeasurementFields } from "@/lib/categories";
 import {
@@ -42,6 +43,8 @@ export default function ResultPage() {
     updateAnalysis,
     selectedTitleIndex,
     setSelectedTitleIndex,
+    customTitle,
+    setCustomTitle,
     measurements,
     setMeasurement,
     accessories,
@@ -81,6 +84,9 @@ export default function ResultPage() {
       })
       .catch((err) => {
         console.error(err);
+        toast.error("AI解析に失敗しました", {
+          description: "手動で情報を入力してください",
+        });
         // Fallback demo data
         setAnalysis({
           gender: "レディース",
@@ -472,12 +478,8 @@ export default function ResultPage() {
                 autoFocus
                 type="text"
                 placeholder="タイトルを入力..."
-                value={analysis.titles[3] || ""}
-                onChange={(e) => {
-                  const newTitles = [...analysis.titles];
-                  newTitles[3] = e.target.value;
-                  updateAnalysis({ titles: newTitles });
-                }}
+                value={customTitle}
+                onChange={(e) => setCustomTitle(e.target.value)}
                 className="w-full h-10 rounded-xl border border-teal-300 px-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
               />
             )}
