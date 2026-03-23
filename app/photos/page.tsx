@@ -30,6 +30,7 @@ export default function PhotosPage() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment", width: 1280, height: 960 },
+        audio: false,
       });
       streamRef.current = stream;
       if (videoRef.current) {
@@ -38,7 +39,7 @@ export default function PhotosPage() {
       }
     } catch {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
