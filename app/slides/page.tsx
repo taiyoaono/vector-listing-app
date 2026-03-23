@@ -305,25 +305,88 @@ const slides = [
   // 9. 今後の実用化に向けて
   () => (
     <Slide>
-      <div className="w-full max-w-5xl space-y-8">
+      <div className="w-full max-w-5xl space-y-6">
         <h2 className="text-4xl font-bold">今後の実用化に向けて</h2>
-        <div className="space-y-4">
+        <p className="text-base text-gray-500">デモから本番運用へ — 必要な開発ステップ</p>
+
+        {/* Current app → What's missing flow */}
+        <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+          <div className="text-sm font-bold text-gray-700 mb-3">現在のデモ → 本番に必要なもの</div>
+          <div className="flex items-center gap-2 flex-wrap justify-center text-xs">
+            <div className="bg-teal-100 text-teal-700 rounded-xl px-3 py-2 font-medium">撮影・AI解析<br /><span className="text-[10px] opacity-70">（実装済み）</span></div>
+            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
+            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">画像圧縮<br /><span className="text-[10px]">ZIP化</span></div>
+            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
+            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">FTP<br /><span className="text-[10px]">アップロード</span></div>
+            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
+            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">GRECS<br /><span className="text-[10px]">自動取込</span></div>
+            <ArrowRight className="w-4 h-4 text-gray-300 shrink-0" />
+            <div className="bg-amber-50 text-amber-700 rounded-xl px-3 py-2 font-medium border border-amber-200">複数PF<br /><span className="text-[10px]">出品連携</span></div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { icon: Database, title: "GRECS連携", desc: "既存FTPバッチを活用した画像・メタデータの自動取込。基本情報連携APIの段階的開発", priority: "最優先" },
-            { icon: Palette, title: "WASABI画像加工連携", desc: "撮影画像の背景白抜き・リサイズ・色補正をWASABIと連携して自動化", priority: "高" },
-            { icon: Globe, title: "複数プラットフォーム出品", desc: "メルカリ・ヤフオク等への同時出品機能。各PFのAPI連携", priority: "中" },
+            {
+              icon: Database,
+              title: "GRECS連携パイプライン",
+              items: [
+                "画像のZIP圧縮・命名規則対応",
+                "FTPサーバーへの自動アップロード",
+                "GRECSバッチ取込との接続",
+                "商品メタデータのAPI連携",
+              ],
+              priority: "Phase 1",
+            },
+            {
+              icon: Palette,
+              title: "画像加工・WASABI連携",
+              items: [
+                "背景白抜き・リサイズ・色補正",
+                "軽量/重量加工の切り替え",
+                "品質タグは加工スキップ制御",
+              ],
+              priority: "Phase 2",
+            },
+            {
+              icon: Globe,
+              title: "複数プラットフォーム出品",
+              items: [
+                "メルカリ・ヤフオク等のAPI連携",
+                "各PFのフォーマットに自動変換",
+                "在庫連動・価格管理",
+              ],
+              priority: "Phase 3",
+            },
+            {
+              icon: Smartphone,
+              title: "現場導入・改善サイクル",
+              items: [
+                "実店舗でのパイロットテスト",
+                "現場フィードバックの反映",
+                "AI精度の継続改善",
+              ],
+              priority: "並行",
+            },
           ].map((item) => (
-            <div key={item.title} className="flex items-start gap-5 bg-gray-50 rounded-2xl p-6 border border-gray-100">
-              <div className="w-14 h-14 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
-                <item.icon className="w-7 h-7" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <span className="text-xl font-bold">{item.title}</span>
+            <div key={item.title} className="bg-white rounded-2xl p-5 border border-gray-100">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
+                  <item.icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="text-base font-bold">{item.title}</div>
                   <Badge color="yellow">{item.priority}</Badge>
                 </div>
-                <p className="text-base text-gray-500 mt-1">{item.desc}</p>
               </div>
+              <ul className="space-y-1.5">
+                {item.items.map((li, j) => (
+                  <li key={j} className="flex items-start gap-2 text-sm text-gray-600">
+                    <CheckCircle className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
+                    {li}
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
