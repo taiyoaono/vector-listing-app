@@ -24,6 +24,22 @@ export default function PhotosPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [maxZoom, setMaxZoom] = useState(1);
+  const [supportsZoom, setSupportsZoom] = useState(false);
+
+  const applyZoom = useCallback(async (zoomLevel: number) => {
+    const stream = streamRef.current;
+    if (!stream) return;
+    const track = stream.getVideoTracks()[0];
+    if (!track) return;
+    try {
+      await track.applyConstraints({ advanced: [{ zoom: zoomLevel } as MediaTrackConstraintSet] });
+      setZoom(zoomLevel);
+    } catch {
+      // zoom not supported
+    }
+  }, []);
 
   const startCamera = useCallback(async () => {
     try {
@@ -34,6 +50,15 @@ export default function PhotosPage() {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => setCameraReady(true);
+      }
+      // Check zoom capability
+      const track = stream.getVideoTracks()[0];
+      if (track) {
+        const capabilities = track.getCapabilities() as MediaTrackCapabilities & { zoom?: { min: number; max: number } };
+        if (capabilities.zoom) {
+          setSupportsZoom(true);
+          setMaxZoom(Math.min(capabilities.zoom.max, 10));
+        }
       }
     } catch {
       try {
@@ -143,6 +168,25 @@ export default function PhotosPage() {
         {!cameraReady && (
           <div className="absolute inset-0 flex items-center justify-center bg-black">
             <div className="text-white text-sm animate-pulse">カメラを起動中...</div>
+          </div>
+        )}
+
+        {/* Zoom Controls - iPhone style */}
+        {supportsZoom && cameraReady && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 bg-black/50 backdrop-blur-md rounded-full px-1.5 py-1">
+            {[1, 2, 3].filter(z => z <= maxZoom).map((z) => (
+              <button
+                key={z}
+                onClick={() => applyZoom(z)}
+                className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+                  Math.round(zoom) === z
+                    ? "bg-teal-500 text-white scale-110"
+                    : "text-white/80"
+                }`}
+              >
+                {z}x
+              </button>
+            ))}
           </div>
         )}
       </div>
