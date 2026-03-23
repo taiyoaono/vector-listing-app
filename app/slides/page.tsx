@@ -308,7 +308,7 @@ const slides = [
       <div className="w-full max-w-5xl space-y-8">
         <h2 className="text-4xl font-bold">今後の実用化に向けて</h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {[
             {
               icon: Database,
