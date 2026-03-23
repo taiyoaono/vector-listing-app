@@ -312,8 +312,6 @@ const slides = [
             { icon: Database, title: "GRECS連携", desc: "既存FTPバッチを活用した画像・メタデータの自動取込。基本情報連携APIの段階的開発", priority: "最優先" },
             { icon: Palette, title: "WASABI画像加工連携", desc: "撮影画像の背景白抜き・リサイズ・色補正をWASABIと連携して自動化", priority: "高" },
             { icon: Globe, title: "複数プラットフォーム出品", desc: "メルカリ・ヤフオク等への同時出品機能。各PFのAPI連携", priority: "中" },
-            { icon: Sparkles, title: "AI精度向上", desc: "品質タグOCRの精度改善、状態判定の学習データ蓄積", priority: "継続" },
-            { icon: Smartphone, title: "現場テスト", desc: "実店舗での実地テスト → フィードバック → 改善サイクル", priority: "次フェーズ" },
           ].map((item) => (
             <div key={item.title} className="flex items-start gap-4 bg-gray-50 rounded-2xl p-4 border border-gray-100">
               <div className="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
