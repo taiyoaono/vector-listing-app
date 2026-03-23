@@ -278,7 +278,7 @@ const slides = [
               height={280}
               className="rounded-2xl"
             />
-            <p className="text-base text-gray-400 mt-3">スマホでスキャン →</p>
+            <p className="text-base text-gray-400 mt-3">スマホでスキャン</p>
           </div>
 
           {/* Demo flow */}
