@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Html5Qrcode } from "html5-qrcode";
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from "html5-qrcode";
 import { ScanBarcode, CheckCircle } from "lucide-react";
 import { useListingStore } from "@/lib/store";
 import { findProductByCode } from "@/lib/demo-products";
@@ -19,13 +19,23 @@ export default function ScanPage() {
   const hasScannedRef = useRef(false);
 
   useEffect(() => {
-    const scanner = new Html5Qrcode("qr-reader");
+    const scanner = new Html5Qrcode("qr-reader", {
+      formatsToSupport: [
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.QR_CODE,
+      ],
+      verbose: false,
+    });
     scannerRef.current = scanner;
 
     scanner
       .start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 280, height: 100 } },
+        { fps: 15, qrbox: { width: 300, height: 150 }, aspectRatio: 1.0 },
         async (decodedText) => {
           if (hasScannedRef.current) return;
           hasScannedRef.current = true;
@@ -94,7 +104,7 @@ export default function ScanPage() {
           {!scannedProduct && (
             <div className="absolute inset-0 pointer-events-none">
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-[260px] h-[80px] border-2 border-teal-300/50 rounded-xl" />
+                <div className="w-[280px] h-[120px] border-2 border-teal-300/50 rounded-xl" />
               </div>
             </div>
           )}
