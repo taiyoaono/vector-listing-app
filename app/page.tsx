@@ -15,7 +15,7 @@ export default function Home() {
       >
         {/* Logo */}
         <div className="space-y-2">
-          <div className="mx-auto inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-lg shadow-emerald-500/25">
+          <div className="mx-auto inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-600 to-teal-700 shadow-lg shadow-teal-500/25">
             <Camera className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">
@@ -55,11 +55,11 @@ export default function Home() {
               transition={{ duration: 0.4, delay: 0.2 + i * 0.1 }}
               className="flex items-center gap-3 bg-white rounded-2xl p-3 shadow-sm border border-gray-100"
             >
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-teal-50 text-teal-600 shrink-0">
                 <item.icon className="w-5 h-5" />
               </div>
               <div className="text-left">
-                <div className="text-xs font-medium text-emerald-600">
+                <div className="text-xs font-medium text-teal-600">
                   STEP {item.step}
                 </div>
                 <div className="text-sm font-semibold">{item.title}</div>
@@ -77,7 +77,7 @@ export default function Home() {
         >
           <Link
             href="/scan"
-            className="inline-flex items-center justify-center w-full h-14 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold text-base shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-transform"
+            className="inline-flex items-center justify-center w-full h-14 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold text-base shadow-lg shadow-teal-500/25 active:scale-[0.98] transition-transform"
           >
             出品する
           </Link>

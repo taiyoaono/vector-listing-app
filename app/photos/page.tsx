@@ -101,14 +101,14 @@ export default function PhotosPage() {
         {/* Phase indicator */}
         <div className="flex items-center gap-2 mb-2">
           <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium ${
-            phase === "tag" ? "bg-emerald-600 text-white" : "bg-gray-700 text-gray-400"
+            phase === "tag" ? "bg-teal-600 text-white" : "bg-gray-700 text-gray-400"
           }`}>
             <Tag className="w-3 h-3" />
             品質タグ {tagImages.length > 0 && `(${tagImages.length})`}
           </div>
           <ChevronRight className="w-3 h-3 text-gray-600" />
           <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium ${
-            phase === "product" ? "bg-emerald-600 text-white" : "bg-gray-700 text-gray-400"
+            phase === "product" ? "bg-teal-600 text-white" : "bg-gray-700 text-gray-400"
           }`}>
             <Camera className="w-3 h-3" />
             商品写真 {productImages.length > 0 && `(${productImages.length})`}
@@ -213,7 +213,7 @@ export default function PhotosPage() {
                 disabled={tagImages.length === 0}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
                   tagImages.length > 0
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-teal-600 text-white"
                     : "bg-gray-800 text-gray-500"
                 }`}
               >
@@ -229,7 +229,7 @@ export default function PhotosPage() {
                 disabled={!canProceed}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all ${
                   canProceed
-                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/25"
+                    ? "bg-teal-600 text-white shadow-lg shadow-teal-500/25"
                     : "bg-gray-800 text-gray-500"
                 }`}
               >
