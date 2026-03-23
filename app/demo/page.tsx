@@ -54,9 +54,9 @@ type SlideType = "image" | "qr" | "tag";
 
 export default function DemoPage() {
   const [selectedProduct, setSelectedProduct] = useState<number | null>(null);
-  const [slideType, setSlideType] = useState<SlideType>("image");
+  const [slideType, setSlideType] = useState<SlideType>("qr");
 
-  const slideTypes: SlideType[] = ["image", "qr", "tag"];
+  const slideTypes: SlideType[] = ["qr", "tag", "image"];
   const slideLabels: Record<SlideType, string> = {
     image: "商品写真",
     qr: "QRコード",
@@ -93,7 +93,7 @@ export default function DemoPage() {
             key={product.id}
             onClick={() => {
               setSelectedProduct(i);
-              setSlideType("image");
+              setSlideType("qr");
             }}
             className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow"
           >
@@ -110,7 +110,7 @@ export default function DemoPage() {
               </span>
             </div>
             <div className="p-3">
-              <div className="text-xs font-semibold text-blue-600">
+              <div className="text-xs font-semibold text-emerald-600">
                 {product.brand}
               </div>
               <div className="text-xs text-gray-700 truncate">
@@ -157,7 +157,7 @@ export default function DemoPage() {
                   onClick={() => setSlideType(type)}
                   className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${
                     slideType === type
-                      ? "bg-blue-600 text-white"
+                      ? "bg-emerald-600 text-white"
                       : "bg-white text-gray-500 border border-gray-200"
                   }`}
                 >
@@ -267,11 +267,11 @@ export default function DemoPage() {
                     key={p.id}
                     onClick={() => {
                       setSelectedProduct(i);
-                      setSlideType("image");
+                      setSlideType("qr");
                     }}
                     className={`shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-colors ${
                       i === selectedProduct
-                        ? "border-blue-600"
+                        ? "border-emerald-600"
                         : "border-transparent opacity-50"
                     }`}
                   >

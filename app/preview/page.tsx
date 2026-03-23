@@ -44,7 +44,7 @@ export default function PreviewPage() {
       particleCount: 100,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ["#2563EB", "#1D4ED8", "#60A5FA", "#DBEAFE"],
+      colors: ["#059669", "#047857", "#34D399", "#D1FAE5"],
     });
     setTimeout(() => {
       confetti({
@@ -52,14 +52,14 @@ export default function PreviewPage() {
         angle: 60,
         spread: 55,
         origin: { x: 0 },
-        colors: ["#2563EB", "#1D4ED8", "#60A5FA"],
+        colors: ["#059669", "#047857", "#34D399"],
       });
       confetti({
         particleCount: 50,
         angle: 120,
         spread: 55,
         origin: { x: 1 },
-        colors: ["#2563EB", "#1D4ED8", "#60A5FA"],
+        colors: ["#059669", "#047857", "#34D399"],
       });
     }, 200);
   };
@@ -74,7 +74,7 @@ export default function PreviewPage() {
           transition={{ type: "spring", duration: 0.5 }}
           className="text-center space-y-6"
         >
-          <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-500/25 flex items-center justify-center">
+          <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-lg shadow-emerald-500/25 flex items-center justify-center">
             <PartyPopper className="w-10 h-10 text-white" />
           </div>
           <div className="space-y-2">
@@ -88,7 +88,7 @@ export default function PreviewPage() {
               reset();
               router.push("/");
             }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-transform"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold text-sm shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-transform"
           >
             <RotateCcw className="w-4 h-4" />
             次の商品を出品
@@ -104,7 +104,7 @@ export default function PreviewPage() {
       <div className="px-5 py-3 flex items-center justify-between">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1 text-sm text-blue-600"
+          className="flex items-center gap-1 text-sm text-emerald-600"
         >
           <ChevronLeft className="w-4 h-4" />
           編集に戻る
@@ -178,7 +178,7 @@ export default function PreviewPage() {
               </span>
               <h1 className="text-lg font-bold leading-tight">{title}</h1>
             </div>
-            <div className="text-xl font-bold text-blue-600">¥ —</div>
+            <div className="text-xl font-bold text-emerald-600">¥ —</div>
           </div>
 
           {/* Info Table */}
@@ -263,7 +263,7 @@ export default function PreviewPage() {
         <div className="max-w-md mx-auto">
           <button
             onClick={handleSubmit}
-            className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-transform"
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold text-sm shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-transform"
           >
             出品する
           </button>

@@ -19,7 +19,7 @@ export default function PhotosPage() {
     removeTagImage,
   } = useListingStore();
 
-  const [activeTab, setActiveTab] = useState<Tab>("product");
+  const [activeTab, setActiveTab] = useState<Tab>("tag");
   const [showHelp, setShowHelp] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -89,10 +89,10 @@ export default function PhotosPage() {
         {/* Step Indicator */}
         <div className="px-5 py-2 bg-black/80">
           <div className="flex items-center gap-2 text-xs">
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600/30 text-blue-300 text-[10px] font-bold">1</span>
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600/30 text-emerald-300 text-[10px] font-bold">1</span>
             <div className="flex-1 h-px bg-gray-700" />
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold">2</span>
-            <span className="font-medium text-blue-400">撮影</span>
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">2</span>
+            <span className="font-medium text-emerald-400">撮影</span>
             <div className="flex-1 h-px bg-gray-700" />
             <span className="flex items-center justify-center w-5 h-5 rounded-full bg-gray-700 text-gray-500 text-[10px] font-bold">3</span>
           </div>
@@ -101,27 +101,27 @@ export default function PhotosPage() {
         {/* Tabs */}
         <div className="flex bg-black/80 px-5 pb-2">
           <button
-            onClick={() => setActiveTab("product")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
-              activeTab === "product" ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400"
-            }`}
-          >
-            <ImageIcon className="w-3.5 h-3.5" />
-            商品写真
-            {productImages.length > 0 && (
-              <span className="bg-white/20 rounded-full px-1.5 text-[10px]">{productImages.length}</span>
-            )}
-          </button>
-          <button
             onClick={() => setActiveTab("tag")}
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ml-2 ${
-              activeTab === "tag" ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400"
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              activeTab === "tag" ? "bg-emerald-600 text-white" : "bg-gray-800 text-gray-400"
             }`}
           >
             <Tag className="w-3.5 h-3.5" />
             品質タグ
             {tagImages.length > 0 && (
               <span className="bg-white/20 rounded-full px-1.5 text-[10px]">{tagImages.length}</span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab("product")}
+            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-colors ml-2 ${
+              activeTab === "product" ? "bg-emerald-600 text-white" : "bg-gray-800 text-gray-400"
+            }`}
+          >
+            <ImageIcon className="w-3.5 h-3.5" />
+            商品写真
+            {productImages.length > 0 && (
+              <span className="bg-white/20 rounded-full px-1.5 text-[10px]">{productImages.length}</span>
             )}
           </button>
           {activeTab === "tag" && (
@@ -202,7 +202,7 @@ export default function PhotosPage() {
             disabled={!canProceed}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               canProceed
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25"
+                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/25"
                 : "bg-gray-800 text-gray-500"
             }`}
           >
@@ -229,7 +229,7 @@ export default function PhotosPage() {
               className="bg-white rounded-2xl p-6 max-w-sm text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <Tag className="w-8 h-8 mx-auto mb-3 text-blue-600" />
+              <Tag className="w-8 h-8 mx-auto mb-3 text-emerald-600" />
               <h3 className="font-semibold mb-2">品質タグとは？</h3>
               <p className="text-xs text-gray-600 mb-4">
                 衣類の内側についているタグで、ブランド名・素材・品番・サイズなどが記載されています。
@@ -237,7 +237,7 @@ export default function PhotosPage() {
               </p>
               <button
                 onClick={() => setShowHelp(false)}
-                className="mt-2 px-6 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium"
+                className="mt-2 px-6 py-2 rounded-xl bg-emerald-600 text-white text-sm font-medium"
               >
                 閉じる
               </button>

@@ -134,7 +134,7 @@ export default function ResultPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="relative z-10 text-center space-y-6"
         >
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg shadow-blue-500/25 flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-700 shadow-lg shadow-emerald-500/25 flex items-center justify-center">
             <Sparkles className="w-8 h-8 text-white animate-pulse" />
           </div>
           <div className="space-y-2">
@@ -156,7 +156,7 @@ export default function ResultPage() {
               <div
                 key={i}
                 className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                  i <= loadingStep ? "bg-blue-600" : "bg-gray-200"
+                  i <= loadingStep ? "bg-emerald-600" : "bg-gray-200"
                 }`}
               />
             ))}
@@ -173,18 +173,18 @@ export default function ResultPage() {
       {/* Step Indicator */}
       <div className="px-5 py-4">
         <div className="flex items-center gap-2 text-xs">
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 text-[10px] font-bold">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600/30 text-emerald-400 text-[10px] font-bold">
             1
           </span>
-          <div className="flex-1 h-px bg-blue-200" />
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600/30 text-blue-400 text-[10px] font-bold">
+          <div className="flex-1 h-px bg-emerald-200" />
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600/30 text-emerald-400 text-[10px] font-bold">
             2
           </span>
-          <div className="flex-1 h-px bg-blue-200" />
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold">
+          <div className="flex-1 h-px bg-emerald-200" />
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">
             3
           </span>
-          <span className="font-medium text-blue-600">確認・編集</span>
+          <span className="font-medium text-emerald-600">確認・編集</span>
         </div>
       </div>
 
@@ -219,7 +219,7 @@ export default function ResultPage() {
                 onClick={() => updateAnalysis({ gender: g })}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                   analysis.gender === g
-                    ? "bg-blue-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -237,12 +237,12 @@ export default function ResultPage() {
                 {i > 0 && (
                   <ChevronRight className="w-3 h-3 text-gray-300" />
                 )}
-                <span className="text-blue-600 font-medium">{cat}</span>
+                <span className="text-emerald-600 font-medium">{cat}</span>
               </span>
             ))}
             <button
               onClick={() => startEdit("category", analysis.category.join(" ＞ "))}
-              className="ml-2 text-gray-400 hover:text-blue-600"
+              className="ml-2 text-gray-400 hover:text-emerald-600"
             >
               <Pencil className="w-3.5 h-3.5" />
             </button>
@@ -287,7 +287,7 @@ export default function ResultPage() {
                 }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
                   analysis.color.includes(c)
-                    ? "bg-blue-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : "bg-gray-100 text-gray-600"
                 }`}
               >
@@ -311,7 +311,7 @@ export default function ResultPage() {
                 }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${
                   analysis.pattern.includes(p)
-                    ? "bg-blue-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : "bg-gray-100 text-gray-600"
                 }`}
               >
@@ -421,7 +421,7 @@ export default function ResultPage() {
                     placeholder="—"
                     value={measurements[field] || ""}
                     onChange={(e) => setMeasurement(field, e.target.value)}
-                    className="w-full h-9 rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none"
+                    className="w-full h-9 rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none"
                   />
                 </div>
               ))}
@@ -436,7 +436,7 @@ export default function ResultPage() {
             placeholder="箱、保存袋、タグ等"
             value={accessories}
             onChange={(e) => setAccessories(e.target.value)}
-            className="w-full h-9 rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none"
+            className="w-full h-9 rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none"
           />
         </Section>
 
@@ -449,7 +449,7 @@ export default function ResultPage() {
                 onClick={() => setSelectedTitleIndex(i)}
                 className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
                   selectedTitleIndex === i
-                    ? "bg-blue-50 border-2 border-blue-600 text-blue-900"
+                    ? "bg-emerald-50 border-2 border-emerald-600 text-emerald-900"
                     : "bg-gray-50 border border-gray-200 text-gray-700"
                 }`}
               >
@@ -465,7 +465,7 @@ export default function ResultPage() {
             value={analysis.description}
             onChange={(e) => updateAnalysis({ description: e.target.value })}
             rows={6}
-            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 outline-none resize-none"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 outline-none resize-none"
           />
         </Section>
       </motion.div>
@@ -475,7 +475,7 @@ export default function ResultPage() {
         <div className="max-w-md mx-auto">
           <button
             onClick={() => router.push("/preview")}
-            className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold text-sm shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
           >
             <Eye className="w-4 h-4" />
             プレビューを確認
@@ -528,11 +528,11 @@ function EditableSection({
             value={tempValue}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && onConfirm()}
-            className="flex-1 h-8 rounded-lg border border-blue-300 px-2 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none"
+            className="flex-1 h-8 rounded-lg border border-emerald-300 px-2 text-sm focus:ring-2 focus:ring-emerald-500/20 outline-none"
           />
           <button
             onClick={onConfirm}
-            className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center"
+            className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center"
           >
             <Check className="w-4 h-4" />
           </button>
@@ -542,7 +542,7 @@ function EditableSection({
           <span className="text-sm font-medium">{value}</span>
           <button
             onClick={onEdit}
-            className="text-gray-400 hover:text-blue-600"
+            className="text-gray-400 hover:text-emerald-600"
           >
             <Pencil className="w-3.5 h-3.5" />
           </button>
