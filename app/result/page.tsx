@@ -128,7 +128,7 @@ export default function ResultPage() {
   // Loading screen
   if (loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center px-8 relative">
+      <div className="flex-1 flex flex-col items-center justify-start pt-[25vh] px-8 relative">
         {productImages[0] && (
           <div
             className="absolute inset-0 bg-cover bg-center opacity-10 blur-xl"
