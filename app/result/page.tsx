@@ -216,7 +216,44 @@ export default function ResultPage() {
           ))}
         </div>
 
-        {/* Title (matches preview order: title first) */}
+        {/* Title */}
+        <Section title="タイトル">
+          <div className="space-y-2">
+            {analysis.titles.map((title, i) => (
+              <button
+                key={i}
+                onClick={() => setSelectedTitleIndex(i)}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                  selectedTitleIndex === i
+                    ? "bg-teal-50 border-2 border-teal-500 text-teal-900"
+                    : "bg-gray-50 border border-gray-200 text-gray-700"
+                }`}
+              >
+                {title}
+              </button>
+            ))}
+            <button
+              onClick={() => setSelectedTitleIndex(-1)}
+              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                selectedTitleIndex === -1
+                  ? "bg-teal-50 border-2 border-teal-500 text-teal-900"
+                  : "bg-gray-50 border border-gray-200 text-gray-700"
+              }`}
+            >
+              自分で入力する
+            </button>
+            {selectedTitleIndex === -1 && (
+              <input
+                autoFocus
+                type="text"
+                placeholder="タイトルを入力..."
+                value={customTitle}
+                onChange={(e) => setCustomTitle(e.target.value)}
+                className="w-full h-10 rounded-xl border border-teal-300 px-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+              />
+            )}
+          </div>
+        </Section>
 
         {/* Condition Rank */}
         <Section title="状態ランク">
@@ -447,46 +484,6 @@ export default function ResultPage() {
             </div>
           </Section>
         )}
-
-        {/* Title */}
-        <Section title="タイトル">
-          <div className="space-y-2">
-            {analysis.titles.map((title, i) => (
-              <button
-                key={i}
-                onClick={() => setSelectedTitleIndex(i)}
-                className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                  selectedTitleIndex === i
-                    ? "bg-teal-50 border-2 border-teal-500 text-teal-900"
-                    : "bg-gray-50 border border-gray-200 text-gray-700"
-                }`}
-              >
-                {title}
-              </button>
-            ))}
-            {/* Custom title option */}
-            <button
-              onClick={() => setSelectedTitleIndex(-1)}
-              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                selectedTitleIndex === -1
-                  ? "bg-teal-50 border-2 border-teal-500 text-teal-900"
-                  : "bg-gray-50 border border-gray-200 text-gray-700"
-              }`}
-            >
-              自分で入力する
-            </button>
-            {selectedTitleIndex === -1 && (
-              <input
-                autoFocus
-                type="text"
-                placeholder="タイトルを入力..."
-                value={customTitle}
-                onChange={(e) => setCustomTitle(e.target.value)}
-                className="w-full h-10 rounded-xl border border-teal-300 px-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
-              />
-            )}
-          </div>
-        </Section>
 
         {/* Description */}
         <Section title="商品説明文">
