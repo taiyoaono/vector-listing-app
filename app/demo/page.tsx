@@ -81,16 +81,16 @@ export default function DemoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 max-w-5xl mx-auto">
-      <div className="text-center mb-6">
-        <h1 className="text-xl font-bold mb-1">デモ用素材</h1>
-        <p className="text-xs text-gray-500">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold mb-2">デモ用素材</h1>
+        <p className="text-sm text-gray-500">
           商品をタップ → バーコード・品質タグ・商品写真を表示
         </p>
       </div>
 
-      {/* Product Cards - Horizontal Scroll */}
-      <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory">
+      {/* Product Cards - 5 items centered */}
+      <div className="flex gap-4 justify-center flex-wrap">
         {DEMO_PRODUCTS.map((product, i) => (
           <button
             key={product.id}
@@ -99,7 +99,7 @@ export default function DemoPage() {
               setSlideType("qr");
               setImageIndex(0);
             }}
-            className="shrink-0 w-[140px] snap-start bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow"
+            className="w-[17%] min-w-[130px] max-w-[180px] bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 text-left hover:shadow-md transition-shadow"
           >
             <div className="aspect-square bg-gray-100 relative">
               <img
