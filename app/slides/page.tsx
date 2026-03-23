@@ -333,34 +333,6 @@ const slides = [
     </Slide>
   ),
 
-  // 10. まとめ
-  () => (
-    <Slide>
-      <div className="text-center space-y-8 max-w-2xl">
-        <h2 className="text-4xl font-bold tracking-tight leading-tight">
-          2WINSは<br />
-          <span style={{ color: TEAL }}>「作って見せる」</span>ができます
-        </h2>
-        <div className="space-y-3 text-left">
-          {[
-            "要望を聞いた翌日に動くプロトタイプを構築",
-            "最新AI（Claude Vision）を活用した実用的な機能",
-            "メルカリ級のモバイルUXをスピード実装",
-            "ベクトル様の業務フローに合わせた設計",
-          ].map((point, i) => (
-            <div key={i} className="flex items-start gap-4 bg-gray-50 rounded-2xl p-4">
-              <CheckCircle className="w-6 h-6 text-teal-500 shrink-0 mt-0.5" />
-              <span className="text-base">{point}</span>
-            </div>
-          ))}
-        </div>
-        <div className="pt-4">
-          <p className="text-base text-gray-500">次のステップとして</p>
-          <p className="text-xl font-bold mt-2">GRECS連携の要件定義からスタートしませんか？</p>
-        </div>
-      </div>
-    </Slide>
-  ),
 ];
 
 export default function SlidesPage() {
