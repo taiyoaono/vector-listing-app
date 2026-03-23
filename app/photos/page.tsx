@@ -3,11 +3,11 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, Tag, Camera, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Sparkles, Tag, Camera, ChevronLeft, ChevronRight, RotateCcw, Trash2 } from "lucide-react";
 import { useListingStore } from "@/lib/store";
 import ZoomControl from "@/components/zoom-control";
 
-type Phase = "tag" | "product";
+type Phase = "tag" | "tag-preview" | "product";
 
 export default function PhotosPage() {
   const router = useRouter();
@@ -25,6 +25,7 @@ export default function PhotosPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
 
   const startCamera = useCallback(async () => {
     try {
@@ -70,54 +71,90 @@ export default function PhotosPage() {
     const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
     if (phase === "tag") {
       addTagImage(dataUrl);
+      setPhase("tag-preview");
     } else {
       addProductImage(dataUrl);
     }
   };
 
-  const images = phase === "tag" ? tagImages : productImages;
-  const removeImage = phase === "tag" ? removeTagImage : removeProductImage;
   const canProceed = productImages.length > 0;
 
-  const phaseConfig = {
-    tag: {
-      icon: Tag,
-      title: "品質タグを撮影してください",
-      subtitle: "ブランド名・素材・品番が記載されたタグ",
-      count: tagImages.length,
-    },
-    product: {
-      icon: Camera,
-      title: "商品写真を撮影してください",
-      subtitle: "全体・各アングル・傷や汚れのアップ",
-      count: productImages.length,
-    },
-  };
+  // --- Tag Preview Phase ---
+  if (phase === "tag-preview" && tagImages.length > 0) {
+    return (
+      <div className="h-[100dvh] flex flex-col bg-black overflow-hidden">
+        {/* Header */}
+        <div className="shrink-0 bg-black/90 px-4 pt-3 pb-3">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium bg-teal-500 text-white">
+              <Tag className="w-3.5 h-3.5" />
+              品質タグ確認
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-white text-base font-semibold">撮影した品質タグを確認</div>
+            <div className="text-gray-400 text-xs">問題なければ次へ進んでください</div>
+          </div>
+        </div>
 
-  const current = phaseConfig[phase];
+        {/* Full preview */}
+        <div className="flex-1 min-h-0 relative flex items-center justify-center p-4">
+          <img
+            src={tagImages[0]}
+            alt="品質タグ"
+            className="max-w-full max-h-full object-contain rounded-2xl"
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="shrink-0 bg-black/90 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                removeTagImage(0);
+                setPhase("tag");
+              }}
+              className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-gray-800 text-white text-sm font-medium"
+            >
+              <RotateCcw className="w-4 h-4" />
+              撮り直す
+            </button>
+            <button
+              onClick={() => setPhase("product")}
+              className="flex-1 flex items-center justify-center gap-2 h-12 rounded-xl bg-teal-500 text-white text-sm font-medium"
+            >
+              次へ進む
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- Camera Phases (tag capture + product capture) ---
+  const isTagPhase = phase === "tag";
 
   return (
     <div className="h-[100dvh] flex flex-col bg-black overflow-hidden relative">
       {/* Header */}
       <div className="shrink-0 bg-black/90 px-4 pt-3 pb-2">
-        {/* Phase indicator */}
         <div className="flex items-center gap-2 mb-2">
           <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium ${
-            phase === "tag" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
+            isTagPhase ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
           }`}>
             <Tag className="w-3.5 h-3.5" />
-            品質タグ {tagImages.length > 0 && `(${tagImages.length})`}
+            品質タグ {tagImages.length > 0 && "✓"}
           </div>
           <ChevronRight className="w-4 h-4 text-gray-600" />
           <div className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium ${
-            phase === "product" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
+            !isTagPhase ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
           }`}>
             <Camera className="w-3.5 h-3.5" />
             商品写真 {productImages.length > 0 && `(${productImages.length})`}
           </div>
         </div>
 
-        {/* Phase instruction */}
         <AnimatePresence mode="wait">
           <motion.div
             key={phase}
@@ -126,8 +163,17 @@ export default function PhotosPage() {
             exit={{ opacity: 0, x: -20 }}
             className="text-center"
           >
-            <div className="text-white text-base font-semibold">{current.title}</div>
-            <div className="text-gray-400 text-xs">{current.subtitle}</div>
+            {isTagPhase ? (
+              <>
+                <div className="text-white text-base font-semibold">品質タグを撮影してください</div>
+                <div className="text-gray-400 text-xs">ブランド名・素材・品番が記載されたタグ</div>
+              </>
+            ) : (
+              <>
+                <div className="text-white text-base font-semibold">商品写真を撮影してください</div>
+                <div className="text-gray-400 text-xs">全体・各アングル・傷や汚れのアップ</div>
+              </>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -149,7 +195,6 @@ export default function PhotosPage() {
           </div>
         )}
 
-        {/* Zoom Control - iPhone style pinch + dial */}
         <ZoomControl
           streamRef={streamRef}
           videoRef={videoRef}
@@ -159,36 +204,32 @@ export default function PhotosPage() {
 
       {/* Footer */}
       <div className="shrink-0 bg-black/90">
-        {/* Thumbnails */}
-        {images.length > 0 && (
-          <div className="flex gap-2 px-4 py-2 overflow-x-auto">
-            <AnimatePresence>
-              {images.map((img, i) => (
-                <motion.div
-                  key={`${phase}-${i}`}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden border border-gray-600"
+        {/* Thumbnails (product phase only) */}
+        {!isTagPhase && productImages.length > 0 && (
+          <div className="flex gap-1 px-3 py-2 overflow-x-auto">
+            {productImages.map((img, i) => (
+              <div key={i} className="relative shrink-0 p-0.5">
+                <button
+                  onClick={() => setPreviewIndex(i)}
+                  className="w-13 h-13 rounded-lg overflow-hidden border border-gray-600 block"
                 >
-                  <img src={img} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
-                  <button
-                    onClick={() => removeImage(i)}
-                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center"
-                  >
-                    <X className="w-2.5 h-2.5 text-white" />
-                  </button>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                  <img src={img} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" style={{ width: 52, height: 52 }} />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); removeProductImage(i); }}
+                  className="absolute top-0 right-0 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center shadow-sm"
+                >
+                  <X className="w-3 h-3 text-white" />
+                </button>
+              </div>
+            ))}
           </div>
         )}
 
         {/* Controls */}
         <div className="flex items-center justify-between py-3 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-          {/* Left action */}
           <div className="w-24">
-            {phase === "tag" ? (
+            {isTagPhase ? (
               <button
                 onClick={() => setPhase("product")}
                 className="text-sm text-gray-500 underline underline-offset-2"
@@ -215,16 +256,16 @@ export default function PhotosPage() {
             <div className="w-12 h-12 rounded-full bg-white" />
           </button>
 
-          {/* Right action */}
           <div className="w-24 flex justify-end">
-            {phase === "tag" ? (
+            {isTagPhase ? (
               <button
-                onClick={() => setPhase("product")}
+                onClick={() => {
+                  if (tagImages.length > 0) setPhase("tag-preview");
+                  else setPhase("product");
+                }}
                 disabled={tagImages.length === 0}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  tagImages.length > 0
-                    ? "bg-teal-500 text-white"
-                    : "bg-gray-800 text-gray-500"
+                  tagImages.length > 0 ? "bg-teal-500 text-white" : "bg-gray-800 text-gray-500"
                 }`}
               >
                 次へ
@@ -238,9 +279,7 @@ export default function PhotosPage() {
                 }}
                 disabled={!canProceed}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  canProceed
-                    ? "bg-teal-500 text-white shadow-lg shadow-teal-400/25"
-                    : "bg-gray-800 text-gray-500"
+                  canProceed ? "bg-teal-500 text-white shadow-lg shadow-teal-400/25" : "bg-gray-800 text-gray-500"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
@@ -250,6 +289,54 @@ export default function PhotosPage() {
           </div>
         </div>
       </div>
+
+      {/* Photo Preview Modal */}
+      <AnimatePresence>
+        {previewIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 bg-black/95 flex flex-col"
+          >
+            {/* Close */}
+            <div className="shrink-0 flex justify-end p-4">
+              <button
+                onClick={() => setPreviewIndex(null)}
+                className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+            </div>
+
+            {/* Image */}
+            <div className="flex-1 min-h-0 flex items-center justify-center px-4">
+              <img
+                src={productImages[previewIndex]}
+                alt={`Photo ${previewIndex + 1}`}
+                className="max-w-full max-h-full object-contain rounded-xl"
+              />
+            </div>
+
+            {/* Info + Delete */}
+            <div className="shrink-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center justify-between">
+              <span className="text-gray-400 text-sm">
+                {previewIndex + 1} / {productImages.length}枚
+              </span>
+              <button
+                onClick={() => {
+                  removeProductImage(previewIndex);
+                  setPreviewIndex(null);
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 text-red-400 text-sm font-medium"
+              >
+                <Trash2 className="w-4 h-4" />
+                削除
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
