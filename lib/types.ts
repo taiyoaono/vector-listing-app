@@ -34,6 +34,7 @@ export interface DemoProduct {
   conditionDetails: string;
   managementCode: string;
   imageUrl: string;
+  imageUrls: string[];
   price: string;
 }
 
