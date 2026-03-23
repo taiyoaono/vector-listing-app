@@ -7,334 +7,334 @@ interface ZoomControlProps {
   streamRef: React.RefObject<MediaStream | null>;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   cameraReady: boolean;
-  onZoomChange?: (zoom: number) => void;
 }
 
-// Convert zoom to angle on the dial (logarithmic scale)
-function zoomToAngle(zoom: number, min: number, max: number): number {
-  const logMin = Math.log2(Math.max(min, 0.5));
-  const logMax = Math.log2(max);
-  const logZoom = Math.log2(zoom);
-  return ((logZoom - logMin) / (logMax - logMin)) * 180 - 90; // -90 to 90
+const YELLOW = "#FFCC33";
+
+function clamp(val: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, val));
 }
 
-function angleToZoom(angle: number, min: number, max: number): number {
+// Logarithmic mapping for zoom <-> angle
+function zoomToNormalized(zoom: number, min: number, max: number): number {
   const logMin = Math.log2(Math.max(min, 0.5));
   const logMax = Math.log2(max);
-  const normalized = (angle + 90) / 180;
-  return Math.pow(2, logMin + normalized * (logMax - logMin));
+  const logZoom = Math.log2(clamp(zoom, min, max));
+  return (logZoom - logMin) / (logMax - logMin);
+}
+
+function normalizedToZoom(n: number, min: number, max: number): number {
+  const logMin = Math.log2(Math.max(min, 0.5));
+  const logMax = Math.log2(max);
+  return Math.pow(2, logMin + clamp(n, 0, 1) * (logMax - logMin));
 }
 
 export default function ZoomControl({
   streamRef,
   videoRef,
   cameraReady,
-  onZoomChange,
 }: ZoomControlProps) {
   const [zoom, setZoom] = useState(1);
   const [minZoom, setMinZoom] = useState(1);
   const [maxZoom, setMaxZoom] = useState(10);
   const [supportsNativeZoom, setSupportsNativeZoom] = useState(false);
-  const [isPinching, setIsPinching] = useState(false);
   const [showDial, setShowDial] = useState(false);
 
-  const baseZoomRef = useRef(1);
-  const basePinchDistRef = useRef(0);
   const zoomRef = useRef(1);
-  const hideDialTimer = useRef<NodeJS.Timeout | null>(null);
-  const dialRef = useRef<HTMLDivElement>(null);
-  const isDraggingDialRef = useRef(false);
-  const dragStartXRef = useRef(0);
-  const dragStartZoomRef = useRef(1);
+  const basePinchDistRef = useRef(0);
+  const baseZoomRef = useRef(1);
+  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dialDragStartXRef = useRef(0);
+  const dialDragStartNormRef = useRef(0);
 
-  // Detect zoom capabilities
+  // Detect capabilities
   useEffect(() => {
     if (!cameraReady || !streamRef.current) return;
     const track = streamRef.current.getVideoTracks()[0];
     if (!track) return;
     try {
       const caps = track.getCapabilities() as MediaTrackCapabilities & {
-        zoom?: { min: number; max: number; step: number };
+        zoom?: { min: number; max: number };
       };
       if (caps.zoom) {
         setSupportsNativeZoom(true);
         setMinZoom(caps.zoom.min);
         setMaxZoom(Math.min(caps.zoom.max, 10));
       }
-    } catch {
-      // no zoom support
-    }
+    } catch {}
   }, [cameraReady, streamRef]);
 
   const applyZoom = useCallback(
     (value: number) => {
-      const clamped = Math.max(minZoom, Math.min(maxZoom, value));
-      const rounded = Math.round(clamped * 10) / 10;
-      zoomRef.current = rounded;
-      setZoom(rounded);
-      onZoomChange?.(rounded);
+      const clamped = clamp(Math.round(value * 10) / 10, minZoom, maxZoom);
+      zoomRef.current = clamped;
+      setZoom(clamped);
 
       if (supportsNativeZoom && streamRef.current) {
         const track = streamRef.current.getVideoTracks()[0];
-        if (track) {
-          track
-            .applyConstraints({
-              advanced: [{ zoom: rounded } as MediaTrackConstraintSet],
-            })
-            .catch(() => {});
-        }
+        track
+          ?.applyConstraints({ advanced: [{ zoom: clamped } as MediaTrackConstraintSet] })
+          .catch(() => {});
       } else if (videoRef.current) {
-        // CSS fallback
-        videoRef.current.style.transform = `scale(${rounded})`;
+        videoRef.current.style.transform = `scale(${clamped})`;
         videoRef.current.style.transformOrigin = "center center";
       }
     },
-    [minZoom, maxZoom, supportsNativeZoom, streamRef, videoRef, onZoomChange]
+    [minZoom, maxZoom, supportsNativeZoom, streamRef, videoRef]
   );
 
-  // Touch event handlers for pinch zoom on camera area
-  useEffect(() => {
-    const cameraEl = videoRef.current?.parentElement;
-    if (!cameraEl) return;
+  const showDialWithTimer = useCallback(() => {
+    setShowDial(true);
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+  }, []);
 
-    const handleTouchStart = (e: TouchEvent) => {
+  const scheduleHideDial = useCallback(() => {
+    if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+    hideTimerRef.current = setTimeout(() => setShowDial(false), 800);
+  }, []);
+
+  // Pinch zoom on camera view
+  useEffect(() => {
+    const el = videoRef.current?.parentElement;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
         e.preventDefault();
-        const dist = Math.hypot(
+        basePinchDistRef.current = Math.hypot(
           e.touches[1].clientX - e.touches[0].clientX,
           e.touches[1].clientY - e.touches[0].clientY
         );
-        basePinchDistRef.current = dist;
         baseZoomRef.current = zoomRef.current;
-        setIsPinching(true);
-        setShowDial(true);
-        if (hideDialTimer.current) clearTimeout(hideDialTimer.current);
+        showDialWithTimer();
       }
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const onTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 2 && basePinchDistRef.current > 0) {
         e.preventDefault();
         const dist = Math.hypot(
           e.touches[1].clientX - e.touches[0].clientX,
           e.touches[1].clientY - e.touches[0].clientY
         );
-        const scale = dist / basePinchDistRef.current;
-        const newZoom = baseZoomRef.current * scale;
-        applyZoom(newZoom);
+        applyZoom(baseZoomRef.current * (dist / basePinchDistRef.current));
       }
     };
 
-    const handleTouchEnd = (e: TouchEvent) => {
+    const onTouchEnd = (e: TouchEvent) => {
       if (e.touches.length < 2) {
         basePinchDistRef.current = 0;
-        setIsPinching(false);
-        hideDialTimer.current = setTimeout(() => setShowDial(false), 800);
+        scheduleHideDial();
       }
     };
 
-    cameraEl.addEventListener("touchstart", handleTouchStart, {
-      passive: false,
-    });
-    cameraEl.addEventListener("touchmove", handleTouchMove, {
-      passive: false,
-    });
-    cameraEl.addEventListener("touchend", handleTouchEnd);
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd);
 
     return () => {
-      cameraEl.removeEventListener("touchstart", handleTouchStart);
-      cameraEl.removeEventListener("touchmove", handleTouchMove);
-      cameraEl.removeEventListener("touchend", handleTouchEnd);
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
     };
-  }, [applyZoom, videoRef]);
-
-  // Dial drag handler
-  const handleDialTouchStart = (e: React.TouchEvent) => {
-    e.stopPropagation();
-    isDraggingDialRef.current = true;
-    dragStartXRef.current = e.touches[0].clientX;
-    dragStartZoomRef.current = zoomRef.current;
-    setShowDial(true);
-    if (hideDialTimer.current) clearTimeout(hideDialTimer.current);
-  };
-
-  const handleDialTouchMove = (e: React.TouchEvent) => {
-    if (!isDraggingDialRef.current) return;
-    e.stopPropagation();
-    const deltaX = e.touches[0].clientX - dragStartXRef.current;
-    // Map horizontal drag to zoom: 200px = full range
-    const zoomRange = Math.log2(maxZoom) - Math.log2(Math.max(minZoom, 0.5));
-    const deltaZoomLog = (deltaX / 200) * zoomRange;
-    const newZoom = Math.pow(
-      2,
-      Math.log2(dragStartZoomRef.current) + deltaZoomLog
-    );
-    applyZoom(newZoom);
-  };
-
-  const handleDialTouchEnd = (e: React.TouchEvent) => {
-    e.stopPropagation();
-    isDraggingDialRef.current = false;
-    hideDialTimer.current = setTimeout(() => setShowDial(false), 800);
-  };
+  }, [applyZoom, videoRef, showDialWithTimer, scheduleHideDial]);
 
   if (!cameraReady) return null;
 
-  // Generate presets based on device capabilities
+  // Dynamic presets
   const presets: number[] = [];
   if (minZoom <= 0.5) presets.push(0.5);
   presets.push(1);
   if (maxZoom >= 2) presets.push(2);
   if (maxZoom >= 5) presets.push(5);
 
-  // Find closest preset
   const closestPreset = presets.reduce((prev, curr) =>
     Math.abs(curr - zoom) < Math.abs(prev - zoom) ? curr : prev
   );
 
-  // Dial tick marks
-  const dialTicks = [];
-  const totalTicks = 60;
-  for (let i = 0; i <= totalTicks; i++) {
-    const angle = (i / totalTicks) * 180 - 90;
+  const formatZoom = (z: number) => {
+    if (z < 1) return `.${Math.round(z * 10)}`;
+    if (z === Math.floor(z)) return `${z}`;
+    return z.toFixed(1);
+  };
+
+  // Dial rendering
+  const DIAL_W = 260;
+  const DIAL_H = 140;
+  const CX = DIAL_W / 2;
+  const CY = DIAL_H - 10;
+  const R = 110;
+  const TICK_COUNT = 80;
+
+  const normalized = zoomToNormalized(zoom, minZoom, maxZoom);
+  // Rotation: dial rotates so current zoom is at top center
+  const dialRotation = -normalized * 180 + 90;
+
+  const ticks = [];
+  for (let i = 0; i <= TICK_COUNT; i++) {
+    const frac = i / TICK_COUNT;
+    const ang = frac * 180 - 90;
     const isMajor = i % 10 === 0;
-    dialTicks.push({ angle, isMajor });
+    const r1 = isMajor ? R - 18 : R - 10;
+    const r2 = R;
+    const rad = (ang * Math.PI) / 180;
+    ticks.push({
+      x1: CX + r1 * Math.cos(rad),
+      y1: CY + r1 * Math.sin(rad),
+      x2: CX + r2 * Math.cos(rad),
+      y2: CY + r2 * Math.sin(rad),
+      isMajor,
+    });
   }
 
-  // Dial preset labels
-  const dialPresetAngles = presets.map((p) => ({
-    value: p,
-    angle: zoomToAngle(p, minZoom, maxZoom),
-  }));
+  // Preset positions on dial
+  const presetLabels = presets.map((p) => {
+    const n = zoomToNormalized(p, minZoom, maxZoom);
+    const ang = (n * 180 - 90 + dialRotation) * (Math.PI / 180);
+    return {
+      value: p,
+      x: CX + (R - 30) * Math.cos(ang),
+      y: CY + (R - 30) * Math.sin(ang),
+      visible:
+        CX + (R - 30) * Math.cos(ang) > 15 &&
+        CX + (R - 30) * Math.cos(ang) < DIAL_W - 15 &&
+        CY + (R - 30) * Math.sin(ang) < CY,
+    };
+  });
 
-  const currentAngle = zoomToAngle(zoom, minZoom, maxZoom);
+  // Dial drag handlers
+  const onDialTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    dialDragStartXRef.current = e.touches[0].clientX;
+    dialDragStartNormRef.current = normalized;
+    showDialWithTimer();
+  };
+
+  const onDialTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    const dx = e.touches[0].clientX - dialDragStartXRef.current;
+    // 250px drag = full zoom range
+    const newNorm = dialDragStartNormRef.current + dx / 250;
+    applyZoom(normalizedToZoom(newNorm, minZoom, maxZoom));
+  };
+
+  const onDialTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    scheduleHideDial();
+  };
+
+  // Long press on preset button
+  const onPresetTouchStart = (preset: number) => {
+    longPressTimerRef.current = setTimeout(() => {
+      showDialWithTimer();
+    }, 300);
+  };
+
+  const onPresetTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
 
   return (
-    <div className="absolute bottom-3 left-0 right-0 flex justify-center z-10">
+    <div className="absolute bottom-2 left-0 right-0 flex justify-center z-10">
       <AnimatePresence mode="wait">
         {showDial ? (
-          // Half-circle dial
           <motion.div
             key="dial"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
-            ref={dialRef}
-            onTouchStart={handleDialTouchStart}
-            onTouchMove={handleDialTouchMove}
-            onTouchEnd={handleDialTouchEnd}
+            initial={{ opacity: 0, y: 20, scale: 0.85 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.85 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
             className="relative select-none"
-            style={{ width: 240, height: 130, touchAction: "none" }}
+            style={{ width: DIAL_W, height: DIAL_H, touchAction: "none" }}
+            onTouchStart={onDialTouchStart}
+            onTouchMove={onDialTouchMove}
+            onTouchEnd={onDialTouchEnd}
           >
-            {/* Dial background */}
-            <svg
-              width="240"
-              height="130"
-              viewBox="0 0 240 130"
-              className="absolute inset-0"
-            >
-              {/* Semi-circle background */}
+            <svg width={DIAL_W} height={DIAL_H} viewBox={`0 0 ${DIAL_W} ${DIAL_H}`}>
+              {/* Background arc */}
               <path
-                d="M 10 125 A 110 110 0 0 1 230 125"
-                fill="rgba(30,30,30,0.85)"
+                d={`M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY}`}
+                fill="rgba(30,30,30,0.88)"
                 stroke="none"
               />
-              {/* Tick marks */}
-              {dialTicks.map((tick, i) => {
-                const rad = ((tick.angle - 90) * Math.PI) / 180;
-                const r1 = tick.isMajor ? 88 : 95;
-                const r2 = 105;
-                const cx = 120;
-                const cy = 125;
-                return (
+              {/* Rotating tick group */}
+              <g transform={`rotate(${dialRotation}, ${CX}, ${CY})`}>
+                {ticks.map((t, i) => (
                   <line
                     key={i}
-                    x1={cx + r1 * Math.cos(rad)}
-                    y1={cy + r1 * Math.sin(rad)}
-                    x2={cx + r2 * Math.cos(rad)}
-                    y2={cy + r2 * Math.sin(rad)}
-                    stroke={tick.isMajor ? "white" : "rgba(255,255,255,0.3)"}
-                    strokeWidth={tick.isMajor ? 2 : 1}
+                    x1={t.x1}
+                    y1={t.y1}
+                    x2={t.x2}
+                    y2={t.y2}
+                    stroke={t.isMajor ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.25)"}
+                    strokeWidth={t.isMajor ? 1.5 : 0.8}
                   />
-                );
-              })}
-              {/* Preset labels */}
-              {dialPresetAngles.map(({ value, angle }) => {
-                const rad = ((angle - 90) * Math.PI) / 180;
-                const r = 75;
-                const cx = 120;
-                const cy = 125;
-                return (
+                ))}
+              </g>
+              {/* Preset labels on dial */}
+              {presetLabels
+                .filter((p) => p.visible)
+                .map((p) => (
                   <text
-                    key={value}
-                    x={cx + r * Math.cos(rad)}
-                    y={cy + r * Math.sin(rad)}
-                    fill="white"
+                    key={p.value}
+                    x={p.x}
+                    y={p.y}
+                    fill="rgba(255,255,255,0.7)"
                     fontSize="11"
                     fontWeight="600"
                     textAnchor="middle"
                     dominantBaseline="middle"
                   >
-                    {value < 1 ? `.${value * 10}` : value}
+                    {formatZoom(p.value)}
                   </text>
-                );
-              })}
-              {/* Current position marker (▼) */}
-              {(() => {
-                const rad = ((currentAngle - 90) * Math.PI) / 180;
-                const r = 108;
-                const cx = 120;
-                const cy = 125;
-                const mx = cx + r * Math.cos(rad);
-                const my = cy + r * Math.sin(rad);
-                return (
-                  <polygon
-                    points={`${mx},${my} ${mx - 4},${my - 7} ${mx + 4},${my - 7}`}
-                    fill="#FFD60A"
-                  />
-                );
-              })()}
+                ))}
+              {/* Center marker ▼ (fixed at top) */}
+              <polygon
+                points={`${CX},${CY - R - 2} ${CX - 4},${CY - R - 9} ${CX + 4},${CY - R - 9}`}
+                fill={YELLOW}
+              />
             </svg>
-            {/* Current zoom value */}
-            <div className="absolute inset-x-0 bottom-4 text-center">
-              <span
-                className="text-lg font-bold"
-                style={{ color: "#FFD60A" }}
-              >
-                {zoom < 1
-                  ? `0.${Math.round(zoom * 10)}`
-                  : zoom.toFixed(1)}
-                x
-              </span>
+            {/* Current zoom display */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 font-bold text-lg"
+              style={{ color: YELLOW, bottom: 12 }}
+            >
+              {formatZoom(zoom)}x
             </div>
           </motion.div>
         ) : (
-          // Preset buttons (iPhone default state)
           <motion.div
             key="presets"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center gap-1 bg-black/40 backdrop-blur-sm rounded-full px-1 py-0.5"
+            transition={{ duration: 0.15 }}
+            className="flex items-center gap-0.5"
           >
-            {presets.map((p) => (
-              <button
-                key={p}
-                onClick={() => applyZoom(p)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
-                  closestPreset === p
-                    ? "bg-gray-700/80"
-                    : ""
-                }`}
-                style={{
-                  color: closestPreset === p ? "#FFD60A" : "rgba(255,255,255,0.8)",
-                }}
-              >
-                {p < 1 ? `.${p * 10}` : `${p}${closestPreset === p ? "x" : ""}`}
-              </button>
-            ))}
+            {presets.map((p) => {
+              const isActive = closestPreset === p;
+              return (
+                <button
+                  key={p}
+                  onClick={() => applyZoom(p)}
+                  onTouchStart={() => onPresetTouchStart(p)}
+                  onTouchEnd={onPresetTouchEnd}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-semibold transition-all ${
+                    isActive ? "bg-[rgba(80,80,80,0.7)]" : ""
+                  }`}
+                  style={{
+                    color: isActive ? YELLOW : "rgba(255,255,255,0.85)",
+                  }}
+                >
+                  {formatZoom(p)}
+                  {isActive && "x"}
+                </button>
+              );
+            })}
           </motion.div>
         )}
       </AnimatePresence>
