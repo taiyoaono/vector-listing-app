@@ -216,42 +216,27 @@ export default function ResultPage() {
           ))}
         </div>
 
-        {/* Gender */}
-        <Section title="性別">
-          <div className="flex gap-2">
-            {(["メンズ", "レディース", "ユニセックス"] as const).map((g) => (
+        {/* Title (matches preview order: title first) */}
+
+        {/* Condition Rank */}
+        <Section title="状態ランク">
+          <div className="flex flex-wrap gap-1.5">
+            {CONDITION_RANKS.map(({ rank, label }) => (
               <button
-                key={g}
-                onClick={() => updateAnalysis({ gender: g })}
+                key={rank}
+                onClick={() =>
+                  updateAnalysis({ conditionRank: rank as ConditionRank })
+                }
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                  analysis.gender === g
-                    ? "bg-teal-500 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  analysis.conditionRank === rank
+                    ? CONDITION_RANK_COLORS[rank]
+                    : "bg-gray-100 text-gray-500"
                 }`}
               >
-                {g}
+                {rank}
+                <span className="ml-1 text-[10px] opacity-70">{label}</span>
               </button>
             ))}
-          </div>
-        </Section>
-
-        {/* Category */}
-        <Section title="カテゴリ">
-          <div className="flex items-center gap-1 text-sm">
-            {analysis.category.map((cat, i) => (
-              <span key={i} className="flex items-center gap-1">
-                {i > 0 && (
-                  <ChevronRight className="w-3 h-3 text-gray-300" />
-                )}
-                <span className="text-teal-500 font-medium">{cat}</span>
-              </span>
-            ))}
-            <button
-              onClick={() => startEdit("category", analysis.category.join(" ＞ "))}
-              className="ml-2 text-gray-400 hover:text-teal-500"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-            </button>
           </div>
         </Section>
 
@@ -278,6 +263,45 @@ export default function ResultPage() {
             onChange={setTempValue}
           />
         </div>
+
+        {/* Category */}
+        <Section title="カテゴリ">
+          <div className="flex items-center gap-1 text-sm">
+            {analysis.category.map((cat, i) => (
+              <span key={i} className="flex items-center gap-1">
+                {i > 0 && (
+                  <ChevronRight className="w-3 h-3 text-gray-300" />
+                )}
+                <span className="text-teal-500 font-medium">{cat}</span>
+              </span>
+            ))}
+            <button
+              onClick={() => startEdit("category", analysis.category.join(" ＞ "))}
+              className="ml-2 text-gray-400 hover:text-teal-500"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </Section>
+
+        {/* Gender */}
+        <Section title="性別">
+          <div className="flex gap-2">
+            {(["メンズ", "レディース", "ユニセックス"] as const).map((g) => (
+              <button
+                key={g}
+                onClick={() => updateAnalysis({ gender: g })}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  analysis.gender === g
+                    ? "bg-teal-500 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                }`}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+        </Section>
 
         {/* Color */}
         <Section title="色">
@@ -338,27 +362,16 @@ export default function ResultPage() {
           onChange={setTempValue}
         />
 
-        {/* Condition Rank */}
-        <Section title="状態ランク">
-          <div className="flex flex-wrap gap-1.5">
-            {CONDITION_RANKS.map(({ rank, label }) => (
-              <button
-                key={rank}
-                onClick={() =>
-                  updateAnalysis({ conditionRank: rank as ConditionRank })
-                }
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                  analysis.conditionRank === rank
-                    ? CONDITION_RANK_COLORS[rank]
-                    : "bg-gray-100 text-gray-500"
-                }`}
-              >
-                {rank}
-                <span className="ml-1 text-[10px] opacity-70">{label}</span>
-              </button>
-            ))}
-          </div>
-        </Section>
+        {/* Label Size */}
+        <EditableSection
+          title="参考表示サイズ"
+          value={analysis.labelSize || "—"}
+          editing={editingField === "labelSize"}
+          tempValue={tempValue}
+          onEdit={() => startEdit("labelSize", analysis.labelSize)}
+          onConfirm={() => confirmEdit("labelSize")}
+          onChange={setTempValue}
+        />
 
         {/* Condition Details */}
         <Section title="状態詳細">
@@ -401,16 +414,16 @@ export default function ResultPage() {
           </div>
         </Section>
 
-        {/* Label Size */}
-        <EditableSection
-          title="参考表示サイズ"
-          value={analysis.labelSize || "—"}
-          editing={editingField === "labelSize"}
-          tempValue={tempValue}
-          onEdit={() => startEdit("labelSize", analysis.labelSize)}
-          onConfirm={() => confirmEdit("labelSize")}
-          onChange={setTempValue}
-        />
+        {/* Accessories */}
+        <Section title="付属品">
+          <input
+            type="text"
+            placeholder="箱、保存袋、タグ等"
+            value={accessories}
+            onChange={(e) => setAccessories(e.target.value)}
+            className="w-full h-9 rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+          />
+        </Section>
 
         {/* Measurements */}
         {measurementFields.length > 0 && (
@@ -434,17 +447,6 @@ export default function ResultPage() {
             </div>
           </Section>
         )}
-
-        {/* Accessories */}
-        <Section title="付属品">
-          <input
-            type="text"
-            placeholder="箱、保存袋、タグ等"
-            value={accessories}
-            onChange={(e) => setAccessories(e.target.value)}
-            className="w-full h-9 rounded-xl border border-gray-200 px-3 text-sm focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
-          />
-        </Section>
 
         {/* Title */}
         <Section title="タイトル">
