@@ -10,6 +10,8 @@ import { findProductByCode } from "@/lib/demo-products";
 export default function ScanPage() {
   const setScannedCode = useListingStore((s) => s.setScannedCode);
   const [isScanning, setIsScanning] = useState(false);
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [manualCode, setManualCode] = useState("");
   const [scannedProduct, setScannedProduct] = useState<{
     brand: string;
     name: string;
@@ -144,15 +146,65 @@ export default function ScanPage() {
               </p>
             </div>
 
-            <button
-              onClick={() => {
-                scannerRef.current?.stop().catch(() => {});
-                window.location.replace("/photos");
-              }}
-              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
-            >
-              スキップして手動入力
-            </button>
+            {!showManualInput ? (
+              <button
+                onClick={() => setShowManualInput(true)}
+                className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
+              >
+                手動で入力する
+              </button>
+            ) : (
+              <div className="w-full max-w-[280px] space-y-3">
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="管理番号を入力..."
+                  value={manualCode}
+                  onChange={(e) => setManualCode(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && manualCode.trim()) {
+                      const product = findProductByCode(manualCode.trim());
+                      if (product) {
+                        setScannedCode(manualCode.trim());
+                        scannerRef.current?.stop().catch(() => {});
+                        setScannedProduct({ brand: product.brand, name: product.name, code: manualCode.trim() });
+                        setTimeout(() => window.location.replace("/photos"), 1200);
+                      }
+                    }
+                  }}
+                  className="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm text-center focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 outline-none"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowManualInput(false)}
+                    className="flex-1 h-9 rounded-xl bg-gray-100 text-gray-600 text-sm font-medium"
+                  >
+                    戻る
+                  </button>
+                  <button
+                    onClick={() => {
+                      const code = manualCode.trim();
+                      if (!code) return;
+                      const product = findProductByCode(code);
+                      if (product) {
+                        setScannedCode(code);
+                        scannerRef.current?.stop().catch(() => {});
+                        setScannedProduct({ brand: product.brand, name: product.name, code });
+                        setTimeout(() => window.location.replace("/photos"), 1200);
+                      } else {
+                        // Not found - go to photos anyway
+                        setScannedCode(code);
+                        scannerRef.current?.stop().catch(() => {});
+                        window.location.replace("/photos");
+                      }
+                    }}
+                    className="flex-1 h-9 rounded-xl bg-teal-500 text-white text-sm font-medium"
+                  >
+                    確定
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
