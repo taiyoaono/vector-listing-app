@@ -140,7 +140,7 @@ export default function ScanPage() {
                 バーコードをスキャン
               </div>
               <p className="text-xs text-muted-foreground">
-                商品のバーコードまたはバーコードをかざしてください
+                商品のバーコードをかざしてください
               </p>
             </div>
 
